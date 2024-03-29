@@ -28,8 +28,12 @@ def startup():
     if len(adb_path)>0:
         comm=[adb_path,'devices']
         #print(comm)
-        out=subprocess.run(comm,shell=False,capture_output=True,check=False)
-        out=out.stdout.decode('utf-8')
+        try:
+            out=subprocess.run(comm,shell=False,capture_output=True,check=False)
+            out=out.stdout.decode('utf-8')
+        except:
+            print('ADB error')
+            out=''
         print(out)
         out=out.splitlines()
     if len(out)>1:
