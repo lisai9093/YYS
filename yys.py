@@ -244,7 +244,7 @@ def yuhun():
                     if refresh==0:
                         cishu=cishu+1
                     print('挑战次数：',cishu)
-                    t = random.randint(50,150) / 100
+                    t = random.randint(500,750) / 100
                 else:
                     print('挑战中。。。',i)
                     t = random.randint(50,100) / 100
