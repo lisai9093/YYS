@@ -3,7 +3,7 @@ import numpy
 from PIL import ImageGrab
 
 def startup():
-    global scalar,adb_enable,adb_path
+    global scalar,scaling_factor,adb_enable,adb_path
     #检测ADB
     if sys.platform=='win32':
         print('检测模拟器')
