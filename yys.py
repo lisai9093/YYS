@@ -158,7 +158,7 @@ def tupo():
             if not len(pts)==0:
                 if last_click==i:
                     if i=='jingong' or i=='jingong2':
-                        refresh=refresh+7
+                        refresh=refresh+3
                     else:
                         refresh=refresh+1
                 else:
