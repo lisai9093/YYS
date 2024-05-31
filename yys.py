@@ -146,7 +146,7 @@ def tupo():
         #奖励
         for i in ['jujue','queding',\
                   'shibai','ying','jiangli','jixu',\
-                  'jingong','jingong2',\
+                  'jingong','jingong2','jingong3',\
                   'lingxunzhang','lingxunzhang2','lingxunzhang4',\
                   'shuaxin','zhunbei']:
             #print(i)
