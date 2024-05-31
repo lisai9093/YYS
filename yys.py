@@ -132,16 +132,6 @@ def tupo():
                 print('进攻次数上限: ',cishu)
                 select_mode()
 
-        want = imgs['jingonghuise']
-        size = want[0].shape
-        h, w , ___ = size
-        target = screen
-        pts = action.locate(target,want,0)
-        if not len(pts) == 0 and liaotu==True:
-            refresh=refresh+1
-            print('进攻CD，暂停5分钟')
-            t=60*5
-            time.sleep(t)
         
         #奖励
         for i in ['jujue','queding',\
@@ -157,8 +147,11 @@ def tupo():
             pts=action.locate(target,want,0)
             if not len(pts)==0:
                 if last_click==i:
-                    if i=='jingong' or i=='jingong2':
-                        refresh=refresh+3
+                    if 'jingong' in i:
+                        refresh=refresh+1
+                        print('进攻CD，暂停5分钟')
+                        t=60*5
+                        time.sleep(t)
                     else:
                         refresh=refresh+1
                 else:
@@ -178,13 +171,13 @@ def tupo():
                         count = count - 1
                     print('进攻总次数：',count)
                     t = random.randint(50,100) / 100
-                elif i=='jingong' or i=='jingong2':
+                elif 'jingong' in i:
                     if refresh==0:
                         cishu = cishu + 1
                         count=count+1
                     print('进攻总次数。。。：',i,count)
                     t = random.randint(500,800) / 100
-                elif i=='lingxunzhang' or i=='lingxunzhang2' or i=='lingxunzhang4':
+                elif 'lingxunzhang' in i:
                     print('选择结界。。。',i)
                     t = random.randint(50,150) / 100
                 else:
