@@ -152,12 +152,13 @@ def tupo():
                         print('进攻CD，暂停5分钟')
                         t=60*5
                         time.sleep(t)
+                        continue
                     else:
                         refresh=refresh+1
                 else:
                     refresh=0
                 last_click=i
-                #print('重复次数：',refresh)
+                print('debug：',i,', ',refresh)
                 if refresh>6:
                     print('进攻次数上限')
                     select_mode()
