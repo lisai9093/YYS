@@ -148,7 +148,7 @@ def tupo():
             if not len(pts)==0:
                 #print('debug: ', last_click,', ', i)
                 if last_click==i:
-                    if 'jingong' in i or 'lingxunzhang' in i:
+                    if ('jingong' in i or 'lingxunzhang' in i) and liaotu:
                         refresh=refresh+1
                         print('进攻CD，暂停5分钟')
                         t=60*5
