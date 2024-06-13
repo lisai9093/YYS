@@ -2,3 +2,4 @@
 .DS*
 *.swp
 __pycache__
+.venv
