@@ -880,7 +880,7 @@ def douji():
         screen=action.screenshot(monitor)
 
         for i in ['jujue','shoudong','zidong','queren',\
-                  'douji','douji3','douji4',\
+                  'douji','douji2','douji3','douji4',\
                   'doujiqueren','doujiend','ying','jixu',\
                   'zhunbei','zhunbei2',\
                   'doujiquxiao']:
@@ -900,7 +900,7 @@ def douji():
                     print('进攻次数上限')
                     select_mode()
                     
-                if i=='douji' or i=='douji4':
+                if 'douji' in i:
                     if cishu>30:
                         print('斗技次数上限')
                         select_mode()
@@ -910,7 +910,7 @@ def douji():
                     print('斗技次数：',cishu)
                     xy = action.cheat(pts[0], w, h-10 )
                     action.touch(xy)
-                    t = random.randint(15,30) / 100
+                    t = random.randint(150,300) / 100
                     time.sleep(t)
                     break
                 elif i=='doujiquxiao':
