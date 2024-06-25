@@ -890,6 +890,8 @@ def douji():
             target = screen
             pts = action.locate(target,want,0)
             if not len(pts) == 0:
+                if 'douji' in i:
+                    i='douji'
                 if last_click==i:
                     refresh=refresh+1
                 else:
