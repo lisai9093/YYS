@@ -880,7 +880,7 @@ def douji():
         screen=action.screenshot(monitor)
 
         for i in ['jujue','shoudong','zidong','queren',\
-                  'douji','douji2','douji3','douji4',\
+                  'douji','douji2','douji3','douji4','doujilianxi',\
                   'doujiqueren','doujiend','ying','jixu',\
                   'zhunbei','zhunbei2',\
                   'doujiquxiao']:
@@ -890,7 +890,8 @@ def douji():
             target = screen
             pts = action.locate(target,want,0)
             if not len(pts) == 0:
-                if 'douji' in i:
+                #print(i)
+                if i in ['douji','douji2','douji3','douji4']:
                     i='douji'
                 if last_click==i:
                     refresh=refresh+1
@@ -901,12 +902,10 @@ def douji():
                 if refresh>6:
                     print('进攻次数上限')
                     select_mode()
-                    
-                if 'douji' in i:
+                if i=='douji':
                     if cishu>30:
                         print('斗技次数上限')
                         select_mode()
-                    doujipaidui=0
                     if refresh==0:
                         cishu=cishu+1
                     print('斗技次数：',cishu)
