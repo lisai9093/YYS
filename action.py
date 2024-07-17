@@ -58,6 +58,7 @@ def startup():
                 subprocess.run(comm,shell=False)
     else:
         print('未监测到ADB设备，默认使用桌面版')
+        print('请把桌面版窗口移动到第一个屏幕的左上角')
         adb_enable=False
         pyautogui.FAILSAFE=False
 

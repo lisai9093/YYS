@@ -447,6 +447,7 @@ def gouliang():
                 if not len(pts) == 0:
                     if i=='boss':
                         boss_done=True
+                        i='jian'
                     if last_click==i:
                         refresh=refresh+1
                     else:
@@ -465,7 +466,7 @@ def gouliang():
                     time.sleep(0.5)
                     break
 
-            if i=='jian' and len(pts)==0:
+            if len(pts)==0:
                 if not boss_done:
                     print('向右走')
                     right = (854, 527)
@@ -475,25 +476,25 @@ def gouliang():
                     time.sleep(t)
                     continue
                 else:
-                    for i in ['queren', 'tuichu']:
-                        want = imgs[i]
-                        size = want[0].shape
-                        h, w , ___ = size
-                        #x1,x2 = upleft, (965, 522)
-                        #target = action.cut(screen, x1, x2)
-                        target = screen
-                        pts = action.locate(target,want,0)
-                        if not len(pts) == 0:
-                            print('退出中',i)
-                            try:
-                                queding = pts[1]
-                            except:
-                                queding = pts[0]
-                            queding = action.cheat(queding, w, h)
-                            action.touch(queding)
-                            t = random.randint(50,80) / 100
-                            time.sleep(t)
-                            break
+                    i='tuichu'
+                    want = imgs[i]
+                    size = want[0].shape
+                    h, w , ___ = size
+                    #x1,x2 = upleft, (965, 522)
+                    #target = action.cut(screen, x1, x2)
+                    target = screen
+                    pts = action.locate(target,want,0)
+                    if not len(pts) == 0:
+                        print('退出中',i)
+                        try:
+                            queding = pts[1]
+                        except:
+                            queding = pts[0]
+                        queding = action.cheat(queding, w, h)
+                        action.touch(queding)
+                        t = random.randint(50,80) / 100
+                        time.sleep(t)
+                        break
                 continue
 
         for i in ['jujue','queding','ying','querenyuhun',\
@@ -629,9 +630,8 @@ def gouliang3():
     last_click=''
     count=0
     refresh=0
+    boss_done=False
     while True:   #直到取消，或者出错
-        
-
         #截屏
         screen=action.screenshot(monitor)
         
@@ -691,6 +691,9 @@ def gouliang3():
                 target = screen
                 pts = action.locate(target,want,0)
                 if not len(pts) == 0:
+                    if i=='boss':
+                        boss_done=True
+                        i='jian'
                     if last_click==i:
                         refresh=refresh+1
                     else:
@@ -714,22 +717,21 @@ def gouliang3():
                     break
 
             if len(pts)==0:
-                for i in ['queren','queren2','tuichu']:
+                if not boss_done:
+                    print('向右走')
+                    right = (854, 527)
+                    right = action.cheat(right, 10, 10)
+                    action.touch(right)
+                    t = random.randint(50,80) / 100
+                    time.sleep(t)
+                    continue
+                else:
+                    i='tuichu'
                     want = imgs[i]
                     size = want[0].shape
                     h, w , ___ = size
                     pts = action.locate(screen,want,0)
                     if not len(pts) == 0:
-                        if last_click==i:
-                            refresh=refresh+1
-                        else:
-                            refresh=0
-                        last_click=i
-                        #print('重复次数：',refresh)
-                        if refresh>6:
-                            print('进攻次数上限')
-                            select_mode()
-                    
                         print('退出中',i)
                         try:
                             queding = pts[1]
