@@ -494,7 +494,6 @@ def gouliang():
                         action.touch(queding)
                         t = random.randint(50,80) / 100
                         time.sleep(t)
-                        break
                 continue
 
         for i in ['jujue','queding','ying','querenyuhun',\
@@ -741,7 +740,6 @@ def gouliang3():
                         action.touch(queding)
                         t = random.randint(50,80) / 100
                         time.sleep(t)
-                        break
                 continue
 
         for i in ['jujue','querenyuhun',\
