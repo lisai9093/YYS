@@ -63,23 +63,27 @@ def select_mode():
         17 Debug模式
         ''')
     action.alarm(1)
-    raw = input("选择功能模式：")
-    try:
-        index = int(raw)
-    except:
-        print('请输入数字')
-        select_mode()
 
     mode = [0, tupo, yuhun, yuhun2, yuhundanren,\
             gouliang, gouliang2, gouliang3,\
             baigui, douji, huodong,\
             card, chouka, shengxing, mijing, yaoqi,\
             qilingdanren, debug]
-    try:
-        command = mode[index]
-    except:
-        print('数字超出范围')
-        select_mode()
+
+    while True:
+        try:
+            index=int(input("选择功能模式："))
+            if index<0:
+                raise Exception('数字超出范围')
+            command = mode[index]
+        except ValueError:
+            print('请输入数字')
+            continue
+        except:
+            print('数字超出范围')
+            continue
+        else:
+            break
 
     if index==0:
         action.reset_resolution()

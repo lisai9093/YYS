@@ -2,7 +2,7 @@ import cv2,time,os,random,sys,mss,copy,subprocess,pyautogui
 import numpy
 
 def startup():
-    global scalar,scaling_factor,adb_enable,adb_path
+    global scalar,scaling_factor,adb_enable,adb_path,device
     #检测ADB
     if sys.platform=='win32':
         print('检测模拟器')
@@ -35,12 +35,31 @@ def startup():
             out=''
         print(out)
         out=out.splitlines()
-    if len(out)>1:
-        out=out[1]
-    if len(out)>1:
+    if len(out)>2:
         print('监测到ADB设备，默认使用安卓截图')
         adb_enable=True
-        
+        #check number of devices
+        devices=[]
+        for device in out:
+            device=device.split()
+            if len(device)==2:
+                devices.append(device[0])
+        if len(devices)==1:
+            device=devices[0]
+        else:
+            for idx,device in devices:
+                print(idx,' ',device)
+            while True:
+                try:
+                    idx=int(input('监测到多个安卓设备，请选择想要运行的设备：'))
+                except ValueError:
+                    print('请输入数字')
+                    continue
+                else:
+                    break
+            device=devices[idx]
+        print('使用设备：',device)
+        #change resolution
         screen=screenshot([])
         w=screen.shape[0]
         h=screen.shape[1]
@@ -50,10 +69,10 @@ def startup():
         else:
             print('修改成桌面版分辨率')
             if w>h:
-                comm=[adb_path,"shell","wm","size","1136x640"]
+                comm=[adb_path,"-s",device,"shell","wm","size","1136x640"]
                 subprocess.run(comm,shell=False)
             elif w<=h:
-                comm=[adb_path,"shell","wm","size","640x1136"]
+                comm=[adb_path,"-s",device,"shell","wm","size","640x1136"]
                 subprocess.run(comm,shell=False)
     else:
         print('未监测到ADB设备，默认使用桌面版')
@@ -76,13 +95,13 @@ def reset_resolution():
     global adb_enable,adb_path
     if adb_enable:
         print('重置安卓分辨率')
-        comm=[adb_path,"shell","wm","size","reset"]
+        comm=[adb_path,"-s",device,"shell","wm","size","reset"]
         subprocess.run(comm,shell=False)
 
 def screenshot(monitor):
     global adb_enable,adb_path
     if adb_enable:
-        comm=[adb_path,"shell","screencap","-p"]
+        comm=[adb_path,"-s",device,"shell","screencap","-p"]
         #隐藏终端窗口
         if sys.platform=='win32':
             startupinfo = subprocess.STARTUPINFO()
@@ -231,7 +250,7 @@ def touch(pos):
     #print(adb_enable)
     x, y = pos
     if adb_enable:
-        comm=[adb_path,"shell","input","tap",str(x),str(y)]
+        comm=[adb_path,"-s",device,"shell","input","tap",str(x),str(y)]
         #print('Command: ',comm)
         subprocess.run(comm,shell=False)
     else:
