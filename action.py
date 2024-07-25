@@ -14,7 +14,21 @@ def startup():
         elif os.path.isfile(mumu_path):
             print('检测到MuMu模拟器')
             adb_path=mumu_path
-            comm=[adb_path,'connect','127.0.0.1:7555']
+            #选择模拟器端口
+            while True:
+                try:
+                    raw=input('选择MuMu模拟器端口（直接回车使用默认7555）：')
+                    port=int(raw)
+                except ValueError:
+                    if len(raw)==0:
+                        port=7555
+                        break
+                    print('请输入数字')
+                    continue
+                else:
+                    break
+            mumu_ip='127.0.0.1:'+str(port)
+            comm=[adb_path,'connect',mumu_ip]
             out=subprocess.run(comm,shell=False,capture_output=True,check=False)
             out=out.stdout.decode('utf-8')
             print(out)
