@@ -47,7 +47,7 @@ def startup():
         if len(devices)==1:
             device=devices[0]
         else:
-            for idx,device in devices:
+            for idx,device in enumerate(devices):
                 print(idx,' ',device)
             while True:
                 try:
