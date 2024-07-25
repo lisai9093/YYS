@@ -1,6 +1,5 @@
 import cv2,time,os,random,sys,mss,copy,subprocess,pyautogui
 import numpy
-from PIL import ImageGrab
 
 def startup():
     global scalar,scaling_factor,adb_enable,adb_path
