@@ -72,7 +72,8 @@ def select_mode():
 
     while True:
         try:
-            index=int(input("选择功能模式："))
+            raw=input("选择功能模式：")
+            index=int(raw)
             if index<0:
                 raise Exception('数字超出范围')
             command = mode[index]
