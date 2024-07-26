@@ -81,13 +81,14 @@ def startup():
         if (w==640 and h==1136) or (h==640 and w==1136):
             print('无需修改分辨率')
         else:
-            print('修改成桌面版分辨率')
             if w>h:
                 comm=[adb_path,"-s",device,"shell","wm","size","1136x640"]
                 subprocess.run(comm,shell=False)
+                print('修改成桌面版分辨率: 1136x640')
             elif w<=h:
                 comm=[adb_path,"-s",device,"shell","wm","size","640x1136"]
                 subprocess.run(comm,shell=False)
+                print('修改成桌面版分辨率: 640x1136')
     else:
         print('未监测到ADB设备，默认使用桌面版')
         print('请把桌面版窗口移动到第一个屏幕的左上角')
@@ -131,10 +132,10 @@ def screenshot(monitor):
         else:
             image_bytes = subprocess.run(comm,shell=False,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         image_bytes = image_bytes.stdout
-        if sys.platform=='win32':
-            #only for Windows, otherwise it will be None
-            image_bytes = image_bytes.replace(b'\r\n', b'\n')
         screen = cv2.imdecode(numpy.frombuffer(image_bytes, numpy.uint8),cv2.IMREAD_COLOR)
+        if screen is None:
+            image_bytes = image_bytes.replace(b'\r\n', b'\n')
+            screen = cv2.imdecode(numpy.frombuffer(image_bytes, numpy.uint8),cv2.IMREAD_COLOR)
         #print('screen: ',screen)
         #print('screen size: ',screen.shape[1],screen.shape[0])
         return screen
