@@ -71,7 +71,7 @@ def startup():
                     print('请输入数字')
                     continue
                 except:
-                    print('数字超出范围(0-'+str(len(devices))+')')
+                    print('数字超出范围(0-'+str(len(devices)-1)+')')
                 else:
                     break
         print('使用设备：',device)
