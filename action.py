@@ -65,7 +65,7 @@ def startup():
                 print(idx+1,' ',device)
             while True:
                 try:
-                    idx=int(input('监测到多个安卓设备，请选择想要运行的设备：(1-'+str(len(devices))+')'))
+                    idx=int(input('监测到多个安卓设备，请选择想要运行的设备(1-'+str(len(devices))+')：'))
                     device=devices[idx-1]
                 except ValueError:
                     print('请输入数字')
