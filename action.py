@@ -62,16 +62,16 @@ def startup():
             device=devices[0]
         else:
             for idx,device in enumerate(devices):
-                print(idx,' ',device)
+                print(idx+1,' ',device)
             while True:
                 try:
-                    idx=int(input('监测到多个安卓设备，请选择想要运行的设备：'))
-                    device=devices[idx]
+                    idx=int(input('监测到多个安卓设备，请选择想要运行的设备：(1-'+str(len(devices))+')'))
+                    device=devices[idx-1]
                 except ValueError:
                     print('请输入数字')
                     continue
                 except:
-                    print('数字超出范围(0-'+str(len(devices)-1)+')')
+                    print('数字超出范围(1-'+str(len(devices))+')')
                 else:
                     break
         print('使用设备：',device)
