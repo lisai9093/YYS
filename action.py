@@ -66,12 +66,14 @@ def startup():
             while True:
                 try:
                     idx=int(input('监测到多个安卓设备，请选择想要运行的设备：'))
+                    device=devices[idx]
                 except ValueError:
                     print('请输入数字')
                     continue
+                except:
+                    print('数字超出范围(0-'+str(len(devices))+')')
                 else:
                     break
-            device=devices[idx]
         print('使用设备：',device)
         #change resolution
         screen=screenshot([])
