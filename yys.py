@@ -54,20 +54,18 @@ def select_mode():
         8 百鬼夜行
         9 自动斗技
         10 当前活动
-        11 结界自动合卡（太阴和伞室内）
-        12 厕纸抽卡
-        13 蓝蛋升级
-        14 秘境召唤
-        15 妖气封印/秘闻
-        16 契灵boss（单刷）
-        17 Debug模式
+        11 厕纸抽卡
+        12 秘境召唤
+        13 妖气封印/秘闻
+        14 契灵boss（单刷）
+        15 Debug模式
         ''')
     action.alarm(1)
 
     mode = [0, tupo, yuhun, yuhun2, yuhundanren,\
             gouliang, gouliang2, gouliang3,\
             baigui, douji, huodong,\
-            card, chouka, shengxing, mijing, yaoqi,\
+            chouka, mijing, yaoqi,\
             qilingdanren, debug]
 
     while True:
