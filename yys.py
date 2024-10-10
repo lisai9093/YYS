@@ -96,10 +96,25 @@ def select_mode():
             select_mode()
 
 ##########################################################
+def cishu_input():
+    while True:
+        try:
+            raw=input("输入挑战次数：")
+            cishu=int(raw)
+            if cishu<1 or cishu>9999:
+                raise Exception('数字超出范围（1-9999）')
+        except ValueError:
+            print('请输入数字')
+            continue
+        except:
+            print('数字超出范围（1-9999）')
+            continue
+        else:
+            break
+    return cishu
 #结节突破
 def tupo():
     last_click=''
-    count=0 #总次数
     cishu = 0
     refresh=0
     liaotu=None
@@ -132,7 +147,7 @@ def tupo():
             
         if liaotu==False:
             if cishu >= 31:
-                print('进攻次数上限: ',cishu)
+                print('进攻次数上限: ',cishu,'/',cishu_max)
                 select_mode()
 
         
@@ -172,15 +187,12 @@ def tupo():
                 if i == 'shibai':
                     if cishu>0:
                         cishu = cishu - 1
-                    if count>0:
-                        count = count - 1
-                    print('进攻总次数：',count)
+                    print('进攻总次数：',cishu,'/',cishu_max)
                     t = random.randint(50,100) / 100
                 elif 'jingong' in i:
                     if refresh==0:
-                        cishu = cishu + 1
-                        count=count+1
-                    print('进攻总次数。。。：',i,count)
+                        cishu=cishu+1
+                    print('进攻总次数：',cishu,'/',cishu_max)
                     t = random.randint(500,800) / 100
                 elif 'lingxunzhang' in i:
                     print('选择结界。。。',i)
@@ -197,6 +209,7 @@ def yuhun():
     last_click=''
     cishu=0
     refresh=0
+    cishu_max=cishu_input()
     while True :
         #鼠标移到最右侧中止    
         
@@ -234,18 +247,17 @@ def yuhun():
                     refresh=0
                 last_click=i
                 #print('重复次数：',refresh)
-                if refresh>6 or cishu>200:
-                    print('进攻次数上限')
-                    select_mode()
-                
                 if i == 'tiaozhan' or i=='tiaozhan2':
                     if refresh==0:
                         cishu=cishu+1
-                    print('挑战次数：',cishu)
+                    print('挑战次数：',cishu,'/',cishu_max)
                     t = random.randint(500,750) / 100
                 else:
                     print('挑战中。。。',i)
                     t = random.randint(50,100) / 100
+                if refresh>6 or cishu>cishu_max:
+                    print('进攻次数上限')
+                    select_mode()
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy)
                 time.sleep(t)
@@ -258,9 +270,6 @@ def yuhun2():
     cishu=0
     refresh=0
     while True :
-        #鼠标移到最右侧中止    
-        
-
         #截屏
         screen=action.screenshot(monitor)
         
@@ -318,7 +327,7 @@ def yuhun2():
                 elif refresh==0 and 'jiangli' in i and not last_click=='querenyuhun':
                     #print('last',last_click)
                     cishu=cishu+1
-                    print('挑战次数：',cishu)
+                    print('挑战次数：',cishu,'/',cishu_max)
                 print('挑战中。。。',i)
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy)
@@ -334,9 +343,8 @@ def yuhundanren():
     last_click=''
     cishu=0
     refresh=0
+    cishu_max=cishu_input()
     while True :   #直到取消，或者出错
-        
-
         #截屏
         screen=action.screenshot(monitor)
         
@@ -364,20 +372,17 @@ def yuhundanren():
                     refresh=0
                 last_click=i
                 #print('重复次数：',refresh)
-                if refresh>6:
-                    print('进攻次数上限')
-                    select_mode()
-                
                 print('挑战中。。。',i)
                 if i == 'tiaozhan' or i=='tiaozhan2' or i=='tiaozhan3' or i=='tancha':
                     if refresh==0:
                         cishu=cishu+1
-                    print('挑战次数：',cishu)
-                    if cishu>200:
-                        select_mode()
+                    print('挑战次数：',cishu,'/',cishu_max)
                     t = random.randint(500,800) / 100
                 else:
                     t = random.randint(15,30) / 100
+                if refresh>6 or cishu>cishu_max:
+                    print('进攻次数上限')
+                    select_mode()
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy)
                 time.sleep(t)
@@ -387,8 +392,9 @@ def yuhundanren():
 #探索司机
 def gouliang():
     last_click=''
-    count=0
+    cishu=0
     refresh=0
+    cishu_max=cishu_input()
     boss_done=False
     while True:   #直到取消，或者出错
         #截屏
@@ -460,11 +466,7 @@ def gouliang():
                     if refresh>6:
                         print('进攻次数上限')
                         select_mode()
-                    
-                    if refresh==0:
-                        count=count+1
-                    print('探索次数：',count)
-                    xx = action.cheat(pts[0], w, h)        
+                    xx = action.cheat(pts[0], w, h)
                     action.touch(xx)
                     time.sleep(0.5)
                     break
@@ -508,18 +510,20 @@ def gouliang():
             target = screen
             pts = action.locate(target,want,0)
             if not len(pts) == 0:
-                if i=='tiaozhan':
-                    boss_done=False
                 if last_click==i:
                     refresh=refresh+1
                 else:
                     refresh=0
                 last_click=i
+                if i=='tiaozhan' and refresh==0:
+                    boss_done=False
+                    cishu=cishu+1
+                    print('挑战次数：',cishu,'/',cishu_max)
                 #print('重复次数：',refresh)
-                if refresh>6:
+                if refresh>6 or cishu>cishu_max:
                     print('进攻次数上限')
                     select_mode()
-                    
+
                 print('领取奖励',i)
                 xy = action.cheat(pts[0], w, h )
                 action.touch(xy)
@@ -535,9 +539,9 @@ def gouliang():
 def gouliang2():
     last_click=''
     refresh=0
+    cishu=0
+    cishu_max=float('inf')
     while True:   #直到取消，或者出错
-        
-
         #截屏
         screen=action.screenshot(monitor)
         
@@ -602,20 +606,22 @@ def gouliang2():
             target = screen
             pts = action.locate(target,want,0)
             if not len(pts) == 0:
-                if i=='jieshou':
-                    a,b=pts[0]
-                    if a<50:
-                        break
                 if last_click==i:
                     refresh=refresh+1
                 else:
                     refresh=0
                 last_click=i
+                if i=='jieshou':
+                    a,b=pts[0]
+                    if a<50:
+                        break
+                    if refresh==0:
+                        cishu=cishu+1
+                        print('挑战次数：',cishu,'/',cishu_max)
                 #print('重复次数：',refresh)
-                if refresh>6:
+                if refresh>6 or cishu>cishu_max:
                     print('进攻次数上限')
                     select_mode()
-                    
                 print('领取奖励',i)
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy)
@@ -630,8 +636,9 @@ def gouliang2():
 #探索单人
 def gouliang3():
     last_click=''
-    count=0
+    cishu=0
     refresh=0
+    cishu_max=cishu_input()
     boss_done=False
     while True:   #直到取消，或者出错
         #截屏
@@ -706,13 +713,7 @@ def gouliang3():
                         print('进攻次数上限')
                         select_mode()
                     
-                    if refresh==0:
-                        count=count+1
                     print('点击小怪',i)
-                    print('探索次数：',count)
-                    if count>500:
-                        print('次数上限')
-                        select_mode()
                     xx = action.cheat(pts[0], w, h)        
                     action.touch(xx)
                     time.sleep(0.5)
@@ -759,11 +760,13 @@ def gouliang3():
                     refresh=0
                 last_click=i
                 #print('重复次数：',refresh)
-                if refresh>6:
+                if refresh==0 and i=='tansuo':
+                    cishu=cishu+1
+                    print('探索次数：',cishu,'/',cishu_max)
+                if refresh>6 or cishu>cishu_max:
                     print('进攻次数上限')
                     select_mode()
-                
-                print('领取奖励',i)
+                print('领取奖励。。。',i)
                 xy = action.cheat(pts[0], w, h )
                 action.touch(xy)
                 t = random.randint(15,30) / 100
@@ -776,9 +779,8 @@ def baigui():
     last_click=''
     refresh=0
     cishu=0
+    cishu_max=cishu_input()
     while True:   #直到取消，或者出错
-        
-
         #截屏
         screen=action.screenshot(monitor)
 
@@ -829,18 +831,16 @@ def baigui():
             else:
                 refresh=0
                 last_click=i
-            print('重复次数：',refresh)
-            if refresh>6:
+            if refresh==0:
+                cishu=cishu+1
+            if refresh>6 or cishu>cishu_max:
                 print('进攻次数上限')
                 select_mode()
-            cishu=cishu+1
-            print('进入百鬼:',cishu)
+            print('进入百鬼:',cishu,'/',cishu_max)
             xy = action.cheat(pts[0], w, h-10 )
             action.touch(xy)
             t = random.randint(10,20) / 100
             time.sleep(t)
-
-        
 
         i='kaishi'
         want = imgs[i]
@@ -887,8 +887,8 @@ def douji():
     doujipaidui=0
     refresh=0
     cishu=0
+    cishu_max=cishu_input()
     while True:   #直到取消，或者出错
-        
         #截屏
         screen=action.screenshot(monitor)
 
@@ -912,21 +912,13 @@ def douji():
                     refresh=0
                 last_click=i
                 #print('重复次数：',refresh)
-                if refresh>6:
+                if refresh>6 or cishu>cishu_max:
                     print('进攻次数上限')
                     select_mode()
-                if i=='douji':
-                    if cishu>30:
-                        print('斗技次数上限')
-                        select_mode()
-                    if refresh==0:
-                        cishu=cishu+1
-                    print('斗技次数：',cishu)
-                    xy = action.cheat(pts[0], w, h-10 )
-                    action.touch(xy)
+                if refresh==0 and i=='douji':
+                    cishu=cishu+1
+                    print('斗技次数：',cishu,'/',cishu_max)
                     t = random.randint(150,300) / 100
-                    time.sleep(t)
-                    break
                 elif i=='doujiquxiao':
                     refresh=0
                     doujipaidui=doujipaidui+1
@@ -935,28 +927,26 @@ def douji():
                         doujipaidui=0
                         print('取消搜索')
                         cishu=cishu-1
-                        xy = action.cheat(pts[0], w, h-10 )
-                        action.touch(xy)
                         t = random.randint(15,30) / 100
-                        time.sleep(t)
+                    else:
                         break
                 else:
                     print('斗技中。。。',i)
-                    xy = action.cheat(pts[0], w, h-10 )
-                    action.touch(xy)
                     t = random.randint(50,100) / 100
-                    time.sleep(t)
-                    break
+                xy = action.cheat(pts[0], w, h-10 )
+                action.touch(xy)
+                t = random.randint(50,100) / 100
+                time.sleep(t)
+                break
 
 ########################################################
 #当前活动
 def huodong():
     last_click=''
-    count=0
+    cishu=0
+    cishu_max=cishu_input()
     refresh=0
     while True:   #直到取消，或者出错
-        
-
         #截屏
         screen=action.screenshot(monitor)
 
@@ -995,8 +985,8 @@ def huodong():
                 t = 1
                 if 'hdtiaozhan' in i:
                     if refresh==0:
-                        count=count+1
-                    print('挑战次数：',count)
+                        cishu=cishu+1
+                        print('挑战次数：',cishu,'/',cishu_max)
                     t=5
                 if i=='hdsousuo':
                     t=5
@@ -1007,6 +997,7 @@ def huodong():
                         time.sleep(t)
                 xy = action.cheat(pts[0], w, h)
                 action.touch(xy)
+                #print('等待时间：',t)
                 time.sleep(t)
 
 ##########################################################
@@ -1015,9 +1006,6 @@ def card():
     last_click=''
     refresh=0
     while True:
-        #鼠标移到右侧中止    
-        
-
         #截屏
         screen=action.screenshot(monitor)
         
@@ -1104,11 +1092,9 @@ def card():
 #抽卡
 def chouka():
     last_click=''
-    count=0
+    cishu=0
+    cishu_max=cishu_input()
     while True:
-        #鼠标移到右侧中止    
-        
-
         #截屏
         screen=action.screenshot(monitor)
         
@@ -1118,11 +1104,11 @@ def chouka():
         target = screen
         pts = action.locate(target,want,0)
         if not len(pts) == 0:
-            if count>200:
+            if cishu>cishu_max:
                 print('次数上限')
                 select_mode()
-            count=count+1
-            print('抽卡中。。。',count)
+            cishu=cishu+1
+            print('抽卡中：',cishu,'/',cishu_max)
             xy = action.cheat(pts[0], w, h-10 )
             action.touch(xy)
             #t = random.randint(1,3) / 100
@@ -1132,12 +1118,9 @@ def chouka():
 #蓝蛋升级
 def shengxing():
     last_click=''
-    count=0
+    cishu=0
     refresh=0
     while True:
-        #鼠标移到右侧中止    
-        
-
         #截屏
         screen=action.screenshot(monitor)
             
@@ -1164,8 +1147,8 @@ def shengxing():
                 action.touch(xy)
                 if i=='querenshengxing':
                     if refresh==0:
-                        count=count+1
-                    print('升级个数：',count)
+                        cishu=cishu+1
+                    print('升级个数：',cishu,'/',cishu_max)
                     t = random.randint(250,350) / 100
                 else:
                     t = random.randint(20,100) / 100
@@ -1178,9 +1161,6 @@ def mijing():
     last_click=''
     refresh=0
     while True:
-        #鼠标移到右侧中止    
-        
-
         #截屏
         screen=action.screenshot(monitor)
         
@@ -1246,11 +1226,10 @@ def mijing():
 #妖气封印和秘闻
 def yaoqi():
     last_click=''
-    count=0
+    cishu=0
+    cishu_max=cishu_input()
     refresh=0
     while True:   #直到取消，或者出错
-        
-
         #截屏
         screen=action.screenshot(monitor)
         
@@ -1270,14 +1249,10 @@ def yaoqi():
                     refresh=0
                 last_click=i
                 #print('重复次数：',refresh)
-                if refresh>6:
-                    print('进攻次数上限')
-                    select_mode()
-                    
                 if i=='zidongpipei' or i=='tiaozhan3' or i=='tiaozhan4':
                     if refresh==0:
-                        count=count+1
-                    print('次数：',count)
+                        cishu=cishu+1
+                    print('挑战次数：',cishu,'/',cishu_max)
                     t=100/100
                 elif i=='shibai':
                     print('自动结束')
@@ -1285,6 +1260,9 @@ def yaoqi():
                 else:
                     print('活动中。。。',i)
                     t = random.randint(30,80) / 100
+                if refresh>6 or cishu>cishu_max:
+                    print('进攻次数上限')
+                    select_mode()
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy)
                 time.sleep(t)
@@ -1305,10 +1283,9 @@ def yaoqi():
 def qilingdanren():
     last_click=''
     cishu=0
+    cishu_max=cishu_input()
     refresh=0
     while True :   #直到取消，或者出错
-        
-
         #截屏
         screen=action.screenshot(monitor)
         
@@ -1337,20 +1314,19 @@ def qilingdanren():
                     refresh=0
                 last_click=i
                 #print('重复次数：',refresh)
-                if refresh>6:
-                    print('进攻次数上限')
-                    select_mode()
-                
                 print('挑战中。。。',i)
                 if i=='tancha' or i=='tiaozhan5':
                     if refresh==0:
                         cishu=cishu+1
-                    print('挑战次数：',cishu)
+                    print('挑战次数：',cishu,'/',cishu_max)
                     t = random.randint(50,150) / 100
                 elif i=='queren3':
                     t = random.randint(350,450) / 100
                 else:
                     t = random.randint(15,30) / 100
+                if refresh>6 or cishu>cishu_max:
+                    print('进攻次数上限')
+                    select_mode()
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy)
                 time.sleep(t)
