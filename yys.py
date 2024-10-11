@@ -270,6 +270,7 @@ def yuhun():
 def yuhun2():
     last_click=''
     cishu=0
+    cishu_max=float('inf')
     refresh=0
     while True :
         #截屏
