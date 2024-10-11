@@ -116,6 +116,7 @@ def cishu_input():
 def tupo():
     last_click=''
     cishu = 0
+    cishu_max=float('inf')
     refresh=0
     liaotu=None
     while True :   #直到取消，或者出错
@@ -143,6 +144,7 @@ def tupo():
             if not len(pts) == 0:
                 liaotu=False
                 print('个人突破')
+                cishu_max=30
 
             
         if liaotu==False:
