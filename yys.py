@@ -99,7 +99,7 @@ def select_mode():
 def cishu_input():
     while True:
         try:
-            raw=input("输入挑战次数：")
+            raw=input("输入挑战次数（1-9999）：")
             cishu=int(raw)
             if cishu<1 or cishu>9999:
                 raise Exception('数字超出范围（1-9999）')
