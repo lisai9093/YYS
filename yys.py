@@ -737,7 +737,7 @@ def gouliang3():
                 #print('重复次数：',refresh)
                 if refresh==0 and i=='tansuo':
                     cishu=cishu+1
-                    print('探索次数：',cishu,'/',cishu_max)
+                    print('\n探索次数：',cishu,'/',cishu_max)
                 if refresh>6 or cishu>cishu_max:
                     print('进攻次数上限')
                     select_mode()
