@@ -328,11 +328,13 @@ def yuhun2():
                     a,b=pts[0]
                     if a<100:
                         break
+                    t = random.randint(150,300) / 100
+                else:
+                    t = random.randint(15,30) / 100
                 print(i,end=" ",flush=True)
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy)
                 last_click=i
-                t = random.randint(15,30) / 100
                 time.sleep(t)
                 break
             
