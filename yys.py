@@ -431,18 +431,6 @@ def gouliang():
         pts = action.locate(target,want,0)
         if not len(pts) == 0:
             print('正在地图中',end=" ",flush=True)
-            want = imgs['left']
-            target = screen
-            pts = action.locate(target,want,0)
-            if not len(pts) == 0:
-                print('向右走',end=" ",flush=True)
-                right = (854, 527)
-                right = action.cheat(right, 10, 10)
-                action.touch(right)
-                t = random.randint(50,80) / 100
-                time.sleep(t)
-                continue
-
             for i in ['boss', 'jian']:
                 want = imgs[i]
                 size = want[0].shape
@@ -676,19 +664,6 @@ def gouliang3():
         pts = action.locate(screen,want,0)
         if not len(pts) == 0:
             print('正在地图中',end=" ",flush=True)
-            
-            want = imgs['left']
-            target = screen
-            pts = action.locate(target,want,0)
-            if not len(pts) == 0:
-                print('向右走',end=" ",flush=True)
-                right = (854, 527)
-                right = action.cheat(right, 10, 10)
-                action.touch(right)
-                t = random.randint(50,80) / 100
-                time.sleep(t)
-                continue
-
             for i in ['boss', 'jian']:
                 want = imgs[i]
                 size = want[0].shape
