@@ -135,7 +135,7 @@ def tupo():
             pts = action.locate(screen,want,0)
             if not len(pts) == 0:
                 liaotu=True
-                print('寮突破')
+                print('寮突破',end=" ",flush=True)
 
             want = imgs['gerentupo']
             size = want[0].shape
@@ -143,7 +143,7 @@ def tupo():
             pts = action.locate(screen,want,0)
             if not len(pts) == 0:
                 liaotu=False
-                print('个人突破')
+                print('个人突破',end=" ",flush=True)
                 cishu_max=30
 
             
@@ -166,7 +166,7 @@ def tupo():
             target=screen
             pts=action.locate(target,want,0)
             if not len(pts)==0:
-                #print('debug: ', last_click,', ', i)
+                #print('debug: ',i)
                 if last_click==i:
                     if ('jingong' in i or 'lingxunzhang' in i) and liaotu:
                         refresh=refresh+1
@@ -185,22 +185,18 @@ def tupo():
                     select_mode()
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy)
-                t = random.randint(15,50) / 100
+                t = random.randint(50,100) / 100
                 if i == 'shibai':
                     if cishu>0:
                         cishu = cishu - 1
-                    print('进攻总次数：',cishu,'/',cishu_max)
+                    print('\n进攻总次数：',cishu,'/',cishu_max)
                     t = random.randint(50,100) / 100
                 elif 'jingong' in i:
                     if refresh==0:
                         cishu=cishu+1
-                    print('进攻总次数：',cishu,'/',cishu_max)
+                    print('\n进攻总次数：',cishu,'/',cishu_max)
                     t = random.randint(500,800) / 100
-                elif 'lingxunzhang' in i:
-                    print('选择结界。。。',i)
-                    t = random.randint(50,150) / 100
-                else:
-                    print('突破中。。。',i)
+                print(i,end=" ",flush=True)
                 time.sleep(t)
                 break
  
@@ -213,9 +209,6 @@ def yuhun():
     refresh=0
     cishu_max=cishu_input()
     while True :
-        #鼠标移到最右侧中止    
-        
-
         #截屏
         screen=action.screenshot(monitor)
         
@@ -252,10 +245,10 @@ def yuhun():
                 if i == 'tiaozhan' or i=='tiaozhan2':
                     if refresh==0:
                         cishu=cishu+1
-                    print('挑战次数：',cishu,'/',cishu_max)
+                    print('\n挑战次数：',cishu,'/',cishu_max)
                     t = random.randint(500,750) / 100
                 else:
-                    print('挑战中。。。',i)
+                    print(i,end=" ",flush=True)
                     t = random.randint(50,100) / 100
                 if refresh>6 or cishu>cishu_max:
                     print('进攻次数上限')
@@ -330,8 +323,8 @@ def yuhun2():
                 elif refresh==0 and 'jiangli' in i and not last_click=='querenyuhun':
                     #print('last',last_click)
                     cishu=cishu+1
-                    print('挑战次数：',cishu,'/',cishu_max)
-                print('挑战中。。。',i)
+                    print('\n挑战次数：',cishu,'/',cishu_max)
+                print(i,end=" ",flush=True)
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy)
                 last_click=i
@@ -375,11 +368,11 @@ def yuhundanren():
                     refresh=0
                 last_click=i
                 #print('重复次数：',refresh)
-                print('挑战中。。。',i)
+                print(i,end=" ",flush=True)
                 if i == 'tiaozhan' or i=='tiaozhan2' or i=='tiaozhan3' or i=='tancha':
                     if refresh==0:
                         cishu=cishu+1
-                    print('挑战次数：',cishu,'/',cishu_max)
+                    print('\n挑战次数：',cishu,'/',cishu_max)
                     t = random.randint(500,800) / 100
                 else:
                     t = random.randint(15,30) / 100
@@ -437,12 +430,12 @@ def gouliang():
         target = screen
         pts = action.locate(target,want,0)
         if not len(pts) == 0:
-            print('正在地图中')
+            print('正在地图中',end=" ",flush=True)
             want = imgs['left']
             target = screen
             pts = action.locate(target,want,0)
             if not len(pts) == 0:
-                print('向右走')
+                print('向右走',end=" ",flush=True)
                 right = (854, 527)
                 right = action.cheat(right, 10, 10)
                 action.touch(right)
@@ -476,7 +469,7 @@ def gouliang():
 
             if len(pts)==0:
                 if not boss_done:
-                    print('向右走')
+                    print('向右走',end=" ",flush=True)
                     right = (854, 527)
                     right = action.cheat(right, 10, 10)
                     action.touch(right)
@@ -493,7 +486,7 @@ def gouliang():
                     target = screen
                     pts = action.locate(target,want,0)
                     if not len(pts) == 0:
-                        print('退出中',i)
+                        print('退出中',i,end=" ",flush=True)
                         try:
                             queding = pts[1]
                         except:
@@ -521,13 +514,13 @@ def gouliang():
                 if i=='tiaozhan' and refresh==0:
                     boss_done=False
                     cishu=cishu+1
-                    print('挑战次数：',cishu,'/',cishu_max)
+                    print('\n挑战次数：',cishu,'/',cishu_max)
                 #print('重复次数：',refresh)
                 if refresh>6 or cishu>cishu_max:
                     print('进攻次数上限')
                     select_mode()
 
-                print('领取奖励',i)
+                print(i,end=" ",flush=True)
                 xy = action.cheat(pts[0], w, h )
                 action.touch(xy)
                 if i=='queding':
@@ -562,15 +555,15 @@ def gouliang2():
         want = imgs['guding']
         pts = action.locate(screen,want,0)
         if not len(pts) == 0:
-            print('正在地图中')
+            print('正在地图中',end=" ",flush=True)
             
             want = imgs['xiao']
             pts = action.locate(screen,want,0)
             
             if not len(pts) == 0:
-                print('组队状态中')
+                print('组队状态中',end=" ",flush=True)
             else:
-                print('退出重新组队')
+                print('退出重新组队',end=" ",flush=True)
                 
                 for i in ['queren', 'queren2','tuichu']:
                     want = imgs[i]
@@ -589,7 +582,7 @@ def gouliang2():
                             print('进攻次数上限')
                             select_mode()
                         
-                        print('退出中',i)
+                        print('退出中',i,end=" ",flush=True)
                         try:
                             queding = pts[1]
                         except:
@@ -620,12 +613,12 @@ def gouliang2():
                         break
                     if refresh==0:
                         cishu=cishu+1
-                        print('挑战次数：',cishu,'/',cishu_max)
+                        print('\n挑战次数：',cishu,'/',cishu_max)
                 #print('重复次数：',refresh)
                 if refresh>6 or cishu>cishu_max:
                     print('进攻次数上限')
                     select_mode()
-                print('领取奖励',i)
+                print(i,end=" ",flush=True)
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy)
                 if i=='jieshou' or i=='jieshou1':
@@ -654,7 +647,7 @@ def gouliang3():
         target = screen
         pts = action.locate(target,want,0)
         if not len(pts) == 0:
-            print('体力不足 ')
+            print('体力不足')
             select_mode()
 
         want = imgs['queren']
@@ -665,7 +658,7 @@ def gouliang3():
         #target = action.cut(screen, x1, x2)
         pts = action.locate(target,want,0)
         if not len(pts) == 0:
-            print('确认退出')
+            print('确认退出',end=" ",flush=True)
             try:
                 queding = pts[1]
             except:
@@ -682,13 +675,13 @@ def gouliang3():
 
         pts = action.locate(screen,want,0)
         if not len(pts) == 0:
-            print('正在地图中')
+            print('正在地图中',end=" ",flush=True)
             
             want = imgs['left']
             target = screen
             pts = action.locate(target,want,0)
             if not len(pts) == 0:
-                print('向右走')
+                print('向右走',end=" ",flush=True)
                 right = (854, 527)
                 right = action.cheat(right, 10, 10)
                 action.touch(right)
@@ -716,15 +709,15 @@ def gouliang3():
                         print('进攻次数上限')
                         select_mode()
                     
-                    print('点击小怪',i)
-                    xx = action.cheat(pts[0], w, h)        
+                    print('点击小怪',i,end=" ",flush=True)
+                    xx = action.cheat(pts[0], w, h)
                     action.touch(xx)
                     time.sleep(0.5)
                     break
 
             if len(pts)==0:
                 if not boss_done:
-                    print('向右走')
+                    print('向右走',end=" ",flush=True)
                     right = (854, 527)
                     right = action.cheat(right, 10, 10)
                     action.touch(right)
@@ -738,7 +731,7 @@ def gouliang3():
                     h, w , ___ = size
                     pts = action.locate(screen,want,0)
                     if not len(pts) == 0:
-                        print('退出中',i)
+                        print('退出中',i,end=" ",flush=True)
                         try:
                             queding = pts[1]
                         except:
@@ -769,7 +762,7 @@ def gouliang3():
                 if refresh>6 or cishu>cishu_max:
                     print('进攻次数上限')
                     select_mode()
-                print('领取奖励。。。',i)
+                print(i,end=" ",flush=True)
                 xy = action.cheat(pts[0], w, h )
                 action.touch(xy)
                 t = random.randint(15,30) / 100
@@ -797,7 +790,7 @@ def baigui():
             pts = action.locate(target,want,0)
             if not len(pts) == 0:
                 refresh=0
-                print('点击',i)
+                print('点击',i,end=" ",flush=True)
                 xy = action.cheat(pts[0], w, h )
                 action.touch(xy)
                 t = random.randint(15,30) / 100
@@ -815,7 +808,7 @@ def baigui():
             if len(pts) == 0:
                 refresh=0
                 #小怪出现！
-                print('点击小怪')
+                print('点击小怪',end=" ",flush=True)
                 pts2 = (640, 450)
                 xx = action.cheat(pts2, 100, 80)        
                 action.touch(xx)
@@ -853,7 +846,7 @@ def baigui():
         pts = action.locate(target,want,0)
         if not len(pts) == 0:
             refresh=0
-            print('选择押注界面')
+            print('选择押注界面',end=" ",flush=True)
             i='ya'
             want = imgs[i]
             size = want[0].shape
@@ -861,7 +854,7 @@ def baigui():
             target = screen
             pts2 = action.locate(target,want,0)
             if not len(pts2) == 0:
-                print('点击开始: ',pts[0])
+                print('点击开始: ',pts[0],end=" ",flush=True)
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy)
                 t = random.randint(15,30) / 100
@@ -870,7 +863,7 @@ def baigui():
                 #选择押注
                 index=random.randint(0,2)
                 pts2 = (300+index*340, 500)
-                print('选择押注: ',index)
+                print('选择押注: ',index,end=" ",flush=True)
                 
                 xy = action.cheat(pts2, w, h-10 )
                 action.touch(xy)
@@ -925,7 +918,7 @@ def douji():
                 elif i=='doujiquxiao':
                     refresh=0
                     doujipaidui=doujipaidui+1
-                    print('斗技搜索:',doujipaidui)
+                    print('斗技搜索:',doujipaidui,end=" ",flush=True)
                     if doujipaidui>5:
                         doujipaidui=0
                         print('取消搜索')
@@ -934,7 +927,7 @@ def douji():
                     else:
                         break
                 else:
-                    print('斗技中。。。',i)
+                    print(i,end=" ",flush=True)
                     t = random.randint(50,100) / 100
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy)
@@ -980,7 +973,7 @@ def huodong():
                     refresh=0
                 last_click=i
                 #print('重复次数：',refresh)
-                print('活动中',i)
+                print(i,end=" ",flush=True)
                 if refresh>6:
                     print('进攻次数上限')
                     select_mode()
@@ -1193,7 +1186,7 @@ def mijing():
                         print('进攻次数上限')
                         select_mode()
                     
-                    print('秘境召唤。。。',i)
+                    print(i,end=" ",flush=True)
                     xy = action.cheat(pts[0], w, h-10 )
                     action.touch(xy)
                     #t = random.randint(10,100) / 100
@@ -1261,7 +1254,7 @@ def yaoqi():
                     print('自动结束')
                     select_mode()
                 else:
-                    print('活动中。。。',i)
+                    print(i,end=" ",flush=True)
                     t = random.randint(30,80) / 100
                 if refresh>6 or cishu>cishu_max:
                     print('进攻次数上限')
@@ -1317,7 +1310,7 @@ def qilingdanren():
                     refresh=0
                 last_click=i
                 #print('重复次数：',refresh)
-                print('挑战中。。。',i)
+                print(i,end=" ",flush=True)
                 if i=='tancha' or i=='tiaozhan5':
                     if refresh==0:
                         cishu=cishu+1
