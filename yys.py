@@ -324,6 +324,10 @@ def yuhun2():
                     #print('last',last_click)
                     cishu=cishu+1
                     print('\n挑战次数：',cishu,'/',cishu_max)
+                if 'jieshou' in i:
+                    a,b=pts[0]
+                    if a<100:
+                        break
                 print(i,end=" ",flush=True)
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy)
@@ -597,7 +601,7 @@ def gouliang2():
                 last_click=i
                 if i=='jieshou':
                     a,b=pts[0]
-                    if a<50:
+                    if a<100:
                         break
                     if refresh==0:
                         cishu=cishu+1
@@ -610,7 +614,7 @@ def gouliang2():
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy)
                 if i=='jieshou' or i=='jieshou1':
-                    t = random.randint(15,30) / 100
+                    t = random.randint(150,300) / 100
                 else:
                     t = random.randint(15,30) / 100
                 time.sleep(t)
@@ -1310,6 +1314,7 @@ def debug():
     #screen=action_adb.screenshot()
     screen=action.screenshot(monitor)
     print('screen: ',screen.shape[1],screen.shape[0])
+    screen = screen[0:screen.shape[0], 0:screen.shape[1]]
     cv2.imshow("", screen)
     print('screen: ',screen.shape[1],screen.shape[0])
     print('点击截图，按任意键返回')
