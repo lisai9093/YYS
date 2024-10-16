@@ -963,7 +963,7 @@ def huodong():
                 if 'hdtiaozhan' in i:
                     if refresh==0:
                         cishu=cishu+1
-                        print('挑战次数：',cishu,'/',cishu_max)
+                        print('\n挑战次数：',cishu,'/',cishu_max)
                     t=5
                 if i=='hdsousuo':
                     t=5
@@ -1229,7 +1229,7 @@ def yaoqi():
                 if i=='zidongpipei' or i=='tiaozhan3' or i=='tiaozhan4':
                     if refresh==0:
                         cishu=cishu+1
-                    print('挑战次数：',cishu,'/',cishu_max)
+                    print('\n挑战次数：',cishu,'/',cishu_max)
                     t=100/100
                 elif i=='shibai':
                     print('自动结束')
@@ -1295,7 +1295,7 @@ def qilingdanren():
                 if i=='tancha' or i=='tiaozhan5':
                     if refresh==0:
                         cishu=cishu+1
-                    print('挑战次数：',cishu,'/',cishu_max)
+                    print('\n挑战次数：',cishu,'/',cishu_max)
                     t = random.randint(50,150) / 100
                 elif i=='queren3':
                     t = random.randint(350,450) / 100
