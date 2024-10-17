@@ -894,7 +894,7 @@ def douji():
                     select_mode()
                 if refresh==0 and i=='douji':
                     cishu=cishu+1
-                    print('斗技次数：',cishu,'/',cishu_max)
+                    print('\n斗技次数：',cishu,'/',cishu_max)
                     t = random.randint(150,300) / 100
                 elif i=='doujiquxiao':
                     refresh=0
