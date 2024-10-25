@@ -889,9 +889,6 @@ def douji():
                     refresh=0
                 last_click=i
                 #print('重复次数：',refresh)
-                if refresh>6 or cishu>cishu_max:
-                    print('进攻次数上限')
-                    select_mode()
                 if refresh==0 and i=='douji':
                     cishu=cishu+1
                     print('\n斗技次数：',cishu,'/',cishu_max)
@@ -910,6 +907,9 @@ def douji():
                 else:
                     print(i,end=" ",flush=True)
                     t = random.randint(50,100) / 100
+                if refresh>6 or cishu>cishu_max:
+                    print('进攻次数上限')
+                    select_mode()
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy)
                 t = random.randint(50,100) / 100
