@@ -56,7 +56,7 @@ def select_mode():
             chouka, mijing, yaoqi,\
             qilingdanren, debug]
 
-    while True:
+    while isRunning[current_index]:
         try:
             raw=input("选择功能模式：")
             index=int(raw)
@@ -85,7 +85,7 @@ def select_mode():
 
 ##########################################################
 def cishu_input():
-    while True:
+    while isRunning[current_index]:
         try:
             raw=input("输入挑战次数（1-9999）：")
             cishu=int(raw)
@@ -107,7 +107,10 @@ def tupo(textBrowser,current_index):
     cishu = 0
     refresh=0
     liaotu=None
-    while True:   #直到取消，或者出错
+    while isRunning[current_index]:   #直到取消，或者出错
+        #print(isRunning)
+        #if not isRunning:
+        #    break
         #截屏
         #im = np.array(mss.mss().grab(monitor))
         #screen = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
@@ -185,7 +188,6 @@ def tupo(textBrowser,current_index):
                 textBrowser.append(i)
                 time.sleep(t)
                 break
-    window.pushButton_start.setText('开始')
 
 ########################################################
 #御魂司机
@@ -194,7 +196,7 @@ def yuhun(textBrowser,current_index):
     cishu=0
     refresh=0
     
-    while True :
+    while isRunning[current_index]:
         #截屏
         screen=action.screenshot(current_index)
         
@@ -251,7 +253,7 @@ def yuhun2(textBrowser,current_index):
     last_click=''
     cishu=0
     refresh=0
-    while True :
+    while isRunning[current_index]:
         #截屏
         screen=action.screenshot(current_index)
         
@@ -332,7 +334,7 @@ def yuhundanren(textBrowser,current_index):
     cishu=0
     refresh=0
     
-    while True :   #直到取消，或者出错
+    while isRunning[current_index]:   #直到取消，或者出错
         #截屏
         screen=action.screenshot(current_index)
         
@@ -384,7 +386,7 @@ def gouliang(textBrowser,current_index):
     refresh=0
     
     boss_done=False
-    while True:   #直到取消，或者出错
+    while isRunning[current_index]:   #直到取消，或者出错
         #截屏
         screen=action.screenshot(current_index)
 
@@ -516,7 +518,7 @@ def gouliang2(textBrowser,current_index):
     last_click=''
     refresh=0
     cishu=0
-    while True:   #直到取消，或者出错
+    while isRunning[current_index]:   #直到取消，或者出错
         #截屏
         screen=action.screenshot(current_index)
         
@@ -615,7 +617,7 @@ def gouliang3(textBrowser,current_index):
     refresh=0
     
     boss_done=False
-    while True:   #直到取消，或者出错
+    while isRunning[current_index]:   #直到取消，或者出错
         #截屏
         screen=action.screenshot(current_index)
         
@@ -742,7 +744,7 @@ def baigui(textBrowser,current_index):
     refresh=0
     cishu=0
     
-    while True:   #直到取消，或者出错
+    while isRunning[current_index]:   #直到取消，或者出错
         #截屏
         screen=action.screenshot(current_index)
 
@@ -850,7 +852,7 @@ def douji(textBrowser,current_index):
     refresh=0
     cishu=0
     
-    while True:   #直到取消，或者出错
+    while isRunning[current_index]:   #直到取消，或者出错
         #截屏
         screen=action.screenshot(current_index)
 
@@ -908,7 +910,7 @@ def huodong(textBrowser,current_index):
     cishu=0
     
     refresh=0
-    while True:   #直到取消，或者出错
+    while isRunning[current_index]:   #直到取消，或者出错
         #截屏
         screen=action.screenshot(current_index)
 
@@ -967,7 +969,7 @@ def huodong(textBrowser,current_index):
 def card(textBrowser,current_index):
     last_click=''
     refresh=0
-    while True:
+    while isRunning[current_index]:
         #截屏
         screen=action.screenshot(current_index)
         
@@ -1056,7 +1058,7 @@ def chouka(textBrowser,current_index):
     last_click=None
     cishu=0
     
-    while True:
+    while isRunning[current_index]:
         #截屏
         screen=action.screenshot(current_index)
         
@@ -1082,7 +1084,7 @@ def shengxing(textBrowser,current_index):
     last_click=''
     cishu=0
     refresh=0
-    while True:
+    while isRunning[current_index]:
         #截屏
         screen=action.screenshot(current_index)
             
@@ -1122,7 +1124,7 @@ def shengxing(textBrowser,current_index):
 def mijing(textBrowser,current_index):
     last_click=''
     refresh=0
-    while True:
+    while isRunning[current_index]:
         #截屏
         screen=action.screenshot(current_index)
         
@@ -1191,7 +1193,7 @@ def yaoqi(textBrowser,current_index):
     last_click=''
     cishu=0
     refresh=0
-    while True:   #直到取消，或者出错
+    while isRunning[current_index]:   #直到取消，或者出错
         #截屏
         screen=action.screenshot(current_index)
         
@@ -1247,7 +1249,7 @@ def qilingdanren(textBrowser,current_index):
     cishu=0
     
     refresh=0
-    while True:   #直到取消，或者出错
+    while isRunning[current_index]:   #直到取消，或者出错
         #截屏
         screen=action.screenshot(current_index)
         
@@ -1324,7 +1326,7 @@ def debug(textBrowser,current_index):
 ####################################################
 #开始/停止按键
 def start_stop(window):
-    global cishu_max,t
+    global cishu_max,t,isRunning
     #find current tab index
     current_index = window.tabWidget.currentIndex()
     #change outputs only for current tab
@@ -1343,9 +1345,13 @@ def start_stop(window):
 
     if t[current_index].isRunning():
         #stop running job
-        isRunning=False
-        t[current_index].terminate()
-        textBrowser.append('已停止！')
+        mutex.lock()  # Acquire the lock
+        isRunning[current_index]=False
+        t[current_index].quit()
+        if not t[current_index].wait(5000):  # Wait for 5 seconds
+            textBrowser.append('已强制停止！')
+            t[current_index].terminate()
+        mutex.unlock()  # Release the lock
         pushButton_start.setText('开始')
         pushButton_restart.setEnabled(True)
     elif listWidget.selectedItems() and not t[current_index].isRunning():
@@ -1380,10 +1386,12 @@ def start_stop(window):
         else:
             #p = Process(target=command)
             #p.start()
+            mutex.lock()  # Acquire the lock
             t[current_index]=MyThread(command,textBrowser,current_index)
             t[current_index].finished.connect(thread_finished)
-            isRunning=True
+            isRunning[current_index]=True
             t[current_index].start()
+            mutex.unlock()  # Release the lock
             pushButton_start.setText('停止')
             pushButton_restart.setEnabled(False)
             #time.sleep(1)
@@ -1407,6 +1415,7 @@ def thread_finished(current_index):
         textBrowser=window.textBrowser_2
     pushButton_start.setText('开始')
     pushButton_restart.setEnabled(True)
+    isRunning[current_index]=False
     textBrowser.append('脚本已结束！')
 ####################################################
 class MainWindow(QMainWindow):
@@ -1496,8 +1505,9 @@ class MyThread(QThread):
     
     def run(self):
         if self.target:
-            self.target(self.textBrowser, self.current_index)
+            self.target(self.textBrowser,self.current_index)
             self.finished.emit(self.current_index)
+
 
 ####################################################
 if __name__ == '__main__':
@@ -1533,5 +1543,6 @@ if __name__ == '__main__':
     #初始化双线程
     t=[MyThread(),MyThread()]
     cishu_max=[0,0]
+    isRunning=[False,False]
     sys.exit(app.exec())
 
