@@ -142,7 +142,6 @@ def tupo(textBrowser,current_index):
         if liaotu==False:
             if cishu >= 31:
                 textBrowser.append('进攻次数上限: '+str(cishu)+'/'+str(cishu_max[current_index]))
-                window.pushButton_start.setText('开始')
                 return
 
         #奖励
@@ -172,7 +171,6 @@ def tupo(textBrowser,current_index):
                 last_click=i
                 if refresh>6:
                     textBrowser.append('进攻次数上限')
-                    window.pushButton_start.setText('开始')
                     return
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy,current_index)
@@ -211,7 +209,6 @@ def yuhun(textBrowser,current_index):
         pts = action.locate(target,want,0)
         if not len(pts) == 0:
             textBrowser.append('体力不足')
-            window.pushButton_start.setText('开始')
             return
 
         #自动点击通关结束后的页面
