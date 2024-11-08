@@ -161,7 +161,7 @@ def tupo(textBrowser,current_index):
                         refresh=refresh+1
                         textBrowser.append('进攻CD，暂停5分钟')
                         t=60*5
-                        time.sleep(t)
+                        if sleep_fast(t,current_index): return
                         last_click=''
                         continue
                     else:
@@ -186,7 +186,7 @@ def tupo(textBrowser,current_index):
                     textBrowser.append('进攻总次数：'+str(cishu)+'/'+str(cishu_max[current_index]))
                     t = random.randint(500,800) / 100
                 textBrowser.append(i)
-                time.sleep(t)
+                if sleep_fast(t,current_index): return
                 break
 
 ########################################################
@@ -234,7 +234,7 @@ def yuhun(textBrowser,current_index):
                     if refresh==0:
                         cishu=cishu+1
                     textBrowser.append('挑战次数：'+str(cishu)+'/'+str(cishu_max[current_index]))
-                    t = random.randint(500,750) / 100
+                    t=random.randint(500,750)/100
                 else:
                     textBrowser.append(i)
                     t = random.randint(50,100) / 100
@@ -243,7 +243,7 @@ def yuhun(textBrowser,current_index):
                     return
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy,current_index)
-                time.sleep(t)
+                if sleep_fast(t,current_index): return
                 break
     
 ########################################################
@@ -283,7 +283,7 @@ def yuhun2(textBrowser,current_index):
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy,current_index)
                 t = random.randint(15,30) / 100
-                time.sleep(t)
+                if sleep_fast(t,current_index): return
                 
         
         #自动点击通关结束后的页面
@@ -322,7 +322,7 @@ def yuhun2(textBrowser,current_index):
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy,current_index)
                 last_click=i
-                time.sleep(t)
+                if sleep_fast(t,current_index): return
                 break
             
 
@@ -374,7 +374,7 @@ def yuhundanren(textBrowser,current_index):
                     return
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy,current_index)
-                time.sleep(t)
+                if sleep_fast(t,current_index): return
                 break
 
 ########################################################
@@ -413,7 +413,7 @@ def gouliang(textBrowser,current_index):
             xy = action.cheat(queding, w, h)
             action.touch(xy,current_index)
             t = random.randint(15,30) / 100
-            time.sleep(t)
+            if sleep_fast(t,current_index): return
 
         
         #设定目标，开始查找
@@ -455,7 +455,7 @@ def gouliang(textBrowser,current_index):
                     xy = action.cheat(right, 10, 10)
                     action.touch(xy,current_index)
                     t = random.randint(100,300) / 100
-                    time.sleep(t)
+                    if sleep_fast(t,current_index): return
                     continue
                 else:
                     i='tuichu'
@@ -475,7 +475,7 @@ def gouliang(textBrowser,current_index):
                         xy = action.cheat(queding, w, h)
                         action.touch(xy,current_index)
                         t = random.randint(50,80) / 100
-                        time.sleep(t)
+                        if sleep_fast(t,current_index): return
                 continue
 
         for i in ['jujue','queding','ying','querenyuhun',\
@@ -508,7 +508,7 @@ def gouliang(textBrowser,current_index):
                     t = random.randint(150,200) / 100
                 else:
                     t = random.randint(15,30) / 100
-                time.sleep(t)
+                if sleep_fast(t,current_index): return
                 break
 
 ########################################################
@@ -570,7 +570,7 @@ def gouliang2(textBrowser,current_index):
                         xy = action.cheat(queding, w, h)
                         action.touch(xy,current_index)
                         t = random.randint(50,80) / 100
-                        time.sleep(t)
+                        if sleep_fast(t,current_index): return
                         break
                 continue
 
@@ -605,7 +605,7 @@ def gouliang2(textBrowser,current_index):
                     t = random.randint(150,300) / 100
                 else:
                     t = random.randint(15,30) / 100
-                time.sleep(t)
+                if sleep_fast(t,current_index): return
                 break
             
 ########################################################
@@ -646,7 +646,7 @@ def gouliang3(textBrowser,current_index):
             xy = action.cheat(queding, w, h)
             action.touch(xy,current_index)
             t = random.randint(15,30) / 100
-            time.sleep(t)
+            if sleep_fast(t,current_index): return
 
         
         #设定目标，开始查找
@@ -689,7 +689,7 @@ def gouliang3(textBrowser,current_index):
                     xy = action.cheat(right, 10, 10)
                     action.touch(xy,current_index)
                     t = random.randint(100,300) / 100
-                    time.sleep(t)
+                    if sleep_fast(t,current_index): return
                     continue
                 else:
                     i='tuichu'
@@ -706,7 +706,7 @@ def gouliang3(textBrowser,current_index):
                         xy = action.cheat(queding, w, h)
                         action.touch(xy,current_index)
                         t = random.randint(50,80) / 100
-                        time.sleep(t)
+                        if sleep_fast(t,current_index): return
                 continue
 
         for i in ['jujue','querenyuhun',\
@@ -733,7 +733,7 @@ def gouliang3(textBrowser,current_index):
                 xy = action.cheat(pts[0], w, h )
                 action.touch(xy,current_index)
                 t = random.randint(15,30) / 100
-                time.sleep(t)
+                if sleep_fast(t,current_index): return
                 break
 
 ########################################################
@@ -761,7 +761,7 @@ def baigui(textBrowser,current_index):
                 xy = action.cheat(pts[0], w, h )
                 action.touch(xy,current_index)
                 t = random.randint(15,30) / 100
-                time.sleep(t)
+                if sleep_fast(t,current_index): return
                 continue
 
         want=imgs['inbaigui']
@@ -803,7 +803,7 @@ def baigui(textBrowser,current_index):
             xy = action.cheat(pts[0], w, h-10 )
             action.touch(xy,current_index)
             t = random.randint(10,20) / 100
-            time.sleep(t)
+            if sleep_fast(t,current_index): return
 
         i='kaishi'
         want = imgs[i]
@@ -825,7 +825,7 @@ def baigui(textBrowser,current_index):
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy,current_index)
                 t = random.randint(15,30) / 100
-                time.sleep(t)
+                if sleep_fast(t,current_index): return
             else:
                 #选择押注
                 index=random.randint(0,2)
@@ -835,12 +835,12 @@ def baigui(textBrowser,current_index):
                 xy = action.cheat(pts2, w, h-10 )
                 action.touch(xy,current_index)
                 t = random.randint(50,100) / 100
-                time.sleep(t)
+                if sleep_fast(t,current_index): return
 
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy,current_index)
                 t = random.randint(15,30) / 100
-                time.sleep(t)
+                if sleep_fast(t,current_index): return
 
 
 ########################################################
@@ -877,7 +877,7 @@ def douji(textBrowser,current_index):
                 #textBrowser.append('重复次数：',refresh)
                 if refresh==0 and i=='douji':
                     cishu=cishu+1
-                    textBrowser.append('\n斗技次数：'+str(cishu)+'/'+str(cishu_max[current_index]))
+                    textBrowser.append('斗技次数：'+str(cishu)+'/'+str(cishu_max[current_index]))
                     t = random.randint(150,300) / 100
                 elif i=='doujiquxiao':
                     refresh=0
@@ -899,7 +899,7 @@ def douji(textBrowser,current_index):
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy,current_index)
                 t = random.randint(50,100) / 100
-                time.sleep(t)
+                if sleep_fast(t,current_index): return
                 break
 
 ########################################################
@@ -957,11 +957,11 @@ def huodong(textBrowser,current_index):
                     if refresh==0:
                         textBrowser.append('疲劳度满，休息10分钟')
                         t = 10*60
-                        time.sleep(t)
+                        if sleep_fast(t,current_index): return
                 xy = action.cheat(pts[0], w, h)
                 action.touch(xy,current_index)
                 #textBrowser.append('等待时间：',t)
-                time.sleep(t)
+                if sleep_fast(t,current_index): return
 
 ##########################################################
 #合成结界卡
@@ -1075,7 +1075,7 @@ def chouka(textBrowser,current_index):
             xy = action.cheat(pts[0], w, h-10 )
             action.touch(xy,current_index)
             t = random.randint(10,30) / 100
-            time.sleep(t)
+            if sleep_fast(t,current_index): return
 
 ##########################################################
 #蓝蛋升级
@@ -1116,7 +1116,7 @@ def shengxing(textBrowser,current_index):
                 else:
                     t = random.randint(20,100) / 100
                     
-                time.sleep(t)
+                if sleep_fast(t,current_index): return
                 
 ##########################################################
 #秘境召唤
@@ -1157,7 +1157,7 @@ def mijing(textBrowser,current_index):
                     xy = action.cheat(pts[0], w, h-10 )
                     action.touch(xy,current_index)
                     #t = random.randint(10,100) / 100
-                    #time.sleep(t)
+                    #if sleep_fast(t,current_index): return
                     break
         else:
             for i in ['jujue','canjia','liaotian']:
@@ -1182,7 +1182,7 @@ def mijing(textBrowser,current_index):
                     xy = action.cheat(pts[0], w, h-10 )
                     action.touch(xy,current_index)
                     t = random.randint(10,30) / 100
-                    time.sleep(t)
+                    if sleep_fast(t,current_index): return
                     break
 
 ########################################################
@@ -1228,7 +1228,7 @@ def yaoqi(textBrowser,current_index):
                     return
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy,current_index)
-                time.sleep(t)
+                if sleep_fast(t,current_index): return
                 break
         
         #体力不足
@@ -1292,10 +1292,8 @@ def qilingdanren(textBrowser,current_index):
                     return
                 xy = action.cheat(pts[0], w, h-10 )
                 action.touch(xy,current_index)
-                time.sleep(t)
+                if sleep_fast(t,current_index): return
                 break
-
-
 ##################################################################
 def debug(textBrowser,current_index):
     from PyQt6.QtGui import QPixmap, QImage
@@ -1322,6 +1320,18 @@ def debug(textBrowser,current_index):
     msg_box.exec()
     #time.sleep(3)
     return
+####################################################
+def sleep_fast(t=0,current_index=None):
+    #return value indicates interrupt happens
+    if current_index==None:
+        #None index
+        time.sleep(t)
+    else:
+        for t_count in range(round(t/0.1)):
+            if not isRunning[current_index]:
+                return True
+            time.sleep(0.1)
+    return False
 ####################################################
 #开始/停止按键
 def start_stop(window):
@@ -1397,12 +1407,33 @@ def thread_finished(current_index):
     pushButton_start=window.tab[current_index].pushButton_start
     pushButton_restart=window.tab[current_index].pushButton_restart
     textBrowser=window.tab[current_index].textBrowser
-
+    #计时
+    t_end = time.time()
+    hours, rem = divmod(t_end-t[current_index].t_start, 3600)
+    minutes, seconds = divmod(rem, 60)
+    textBrowser.append("运行时间：{:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds))
+    textBrowser.append(str(datetime.datetime.now()))
+    #更新日志/按键
     pushButton_start.setText('开始')
     pushButton_restart.setEnabled(True)
     isRunning[current_index]=False
     textBrowser.append('脚本已结束！')
     action.alarm(1)
+####################################################
+#多线程
+class MyThread(QThread):
+    finished = pyqtSignal(int)
+    def __init__(self, target=None,textBrowser=None,current_index=None):
+        super().__init__()
+        self.target = target
+        self.textBrowser = textBrowser
+        self.current_index = current_index
+        self.t_start=time.time()
+    
+    def run(self):
+        if self.target:
+            self.target(self.textBrowser,self.current_index)
+            self.finished.emit(self.current_index)
 ####################################################
 #主窗口
 class MainWindow(QMainWindow):
@@ -1477,21 +1508,6 @@ class MainWindow(QMainWindow):
         scrollbar.setValue(scrollbar.maximum())
     def tab_changed(self, index):
         print(f"Tab {index} clicked")
-    
-####################################################
-#多线程
-class MyThread(QThread):
-    finished = pyqtSignal(int)
-    def __init__(self, target=None, textBrowser=None, current_index=None):
-        super().__init__()
-        self.target = target
-        self.textBrowser = textBrowser
-        self.current_index = current_index
-    
-    def run(self):
-        if self.target:
-            self.target(self.textBrowser,self.current_index)
-            self.finished.emit(self.current_index)
 ####################################################
 if __name__ == '__main__':
     #总设备数量
