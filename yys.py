@@ -1395,12 +1395,7 @@ def start_stop(window):
     elif not listWidget.selectedItems():
         #没有选择任何脚本
         textBrowser.append('无效选项')
-def click_clear(window):
-    window.textBrowser.clear()
-def click_restart(window):
-    action.startup()
-def text_changed():
-    pass
+
 def thread_finished(current_index):
     pushButton_start=window.tab[current_index].pushButton_start
     pushButton_restart=window.tab[current_index].pushButton_restart
@@ -1431,7 +1426,7 @@ class MainWindow(QMainWindow):
             self.tab[i].pushButton_clear.clicked.connect(self.click_clear)
             self.tab[i].pushButton_restart.clicked.connect(self.click_restart)
             self.tab[i].listWidget.currentItemChanged.connect(self.click_list)
-            self.tab[i].textBrowser.textChanged.connect(self.text_changed)
+            self.tab[i].textBrowser.textChanged.connect(lambda value=i: self.text_changed(value))
         #self.tabWidget.currentChanged.connect(self.tab_changed)
         # Set the tab widget as the central widget
         self.setCentralWidget(self.tabWidget)
@@ -1475,9 +1470,10 @@ class MainWindow(QMainWindow):
             elif index==13:
                 lineEdit.setText('10')
     #自动显示最新日志
-    def text_changed(self):
+    def text_changed(self,current_index):
+        #print(current_index)
         #current tab
-        current_index=self.tabWidget.currentIndex()
+        #current_index=self.tabWidget.currentIndex()
         textBrowser=self.tab[current_index].textBrowser
         #scroll to bottom
         scrollbar=textBrowser.verticalScrollBar()
@@ -1504,7 +1500,9 @@ if __name__ == '__main__':
     #总设备数量
     nthread=2
     #初始化所有线程
-    t=[MyThread()]*nthread
+    t=[MyThread()]
+    for i in range(nthread-1):
+        t.append(MyThread())
     cishu_max=[0]*nthread
     isRunning=[False]*nthread
     action.init_thread_variable(nthread)
@@ -1517,7 +1515,7 @@ if __name__ == '__main__':
     #检测系统
     print('操作系统: '+sys.platform)
     #自动检测ADB设备
-    action.startup(window)
+    #action.startup(window)
     #读取文件
     imgs = action.load_imgs()
     #pyautogui.PAUSE = 0.05
