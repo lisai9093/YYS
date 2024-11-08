@@ -33,7 +33,7 @@ def select_mode():
     textBrowser.append("运行时间：{:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds))
     print (datetime.datetime.now())
 
-    textBrowser.append('''\n菜单：  按下CTRL+C停止，0退出
+    textBrowser.append('''菜单：  按下CTRL+C停止，0退出
         1 结界突破
         2 御魂(司机)
         3 御魂(打手)
@@ -725,7 +725,7 @@ def gouliang3(textBrowser,current_index):
                 #textBrowser.append('重复次数：',refresh)
                 if refresh==0 and i=='tansuo':
                     cishu=cishu+1
-                    textBrowser.append('\n探索次数：'+str(cishu)+'/'+str(cishu_max[current_index]))
+                    textBrowser.append('探索次数：'+str(cishu)+'/'+str(cishu_max[current_index]))
                 if refresh>6 or cishu>cishu_max[current_index]:
                     textBrowser.append('进攻次数上限')
                     return
