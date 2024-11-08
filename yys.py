@@ -14,6 +14,8 @@ from PyQt6.QtWidgets import (
     QWidget,
     QMessageBox,
     QMainWindow,
+    QTabWidget,
+    QVBoxLayout,
 )
 from PyQt6.QtCore import QThread,pyqtSignal,QProcess,QMutex,Qt
 
@@ -1330,18 +1332,11 @@ def start_stop(window):
     #find current tab index
     current_index = window.tabWidget.currentIndex()
     #change outputs only for current tab
-    if current_index==0:
-        textBrowser=window.textBrowser
-        listWidget=window.listWidget
-        lineEdit=window.lineEdit
-        pushButton_start=window.pushButton_start
-        pushButton_restart=window.pushButton_restart
-    elif current_index==1:
-        textBrowser=window.textBrowser_2
-        listWidget=window.listWidget_2
-        lineEdit=window.lineEdit_2
-        pushButton_start=window.pushButton_start_2
-        pushButton_restart=window.pushButton_restart_2
+    textBrowser=window.tab[current_index].textBrowser
+    listWidget=window.tab[current_index].listWidget
+    lineEdit=window.tab[current_index].lineEdit
+    pushButton_start=window.tab[current_index].pushButton_start
+    pushButton_restart=window.tab[current_index].pushButton_restart
 
     if t[current_index].isRunning():
         #stop running job
@@ -1407,36 +1402,39 @@ def click_restart(window):
 def text_changed():
     pass
 def thread_finished(current_index):
-    if current_index==0:
-        pushButton_start=window.pushButton_start
-        pushButton_restart=window.pushButton_restart
-        textBrowser=window.textBrowser
-    elif current_index==1:
-        pushButton_start=window.pushButton_start_2
-        pushButton_restart=window.pushButton_restart_2
-        textBrowser=window.textBrowser_2
+    pushButton_start=window.tab[current_index].pushButton_start
+    pushButton_restart=window.tab[current_index].pushButton_restart
+    textBrowser=window.tab[current_index].textBrowser
+
     pushButton_start.setText('开始')
     pushButton_restart.setEnabled(True)
     isRunning[current_index]=False
     textBrowser.append('脚本已结束！')
     action.alarm(1)
 ####################################################
+#主窗口
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self,nthread):
         super().__init__()
         loadUi("yys.ui", self)
-        self.t=None
-
-        self.pushButton_start.clicked.connect(self.click_start)
-        self.pushButton_start_2.clicked.connect(self.click_start)
-        self.pushButton_clear.clicked.connect(self.click_clear)
-        self.pushButton_clear_2.clicked.connect(self.click_clear)
-        self.pushButton_restart.clicked.connect(self.click_restart)
-        self.pushButton_restart_2.clicked.connect(self.click_restart)
-        self.listWidget.currentItemChanged.connect(self.click_list)
-        self.listWidget_2.currentItemChanged.connect(self.click_list)
-        self.textBrowser.textChanged.connect(self.text_changed)
-        self.textBrowser_2.textChanged.connect(self.text_changed_2)
+        self.setWindowTitle("YYS脚本 - lisai9093")
+        #默认2线程
+        self.nthread=nthread
+        self.tab=[None]*self.nthread
+        # Create the tab widget
+        self.tabWidget = QTabWidget()
+        # Create two tabs and load the same UI file into each
+        for i in range(self.nthread):
+            self.tab[i]=loadUi("yys.ui")
+            self.tabWidget.addTab(self.tab[i], f"设备{i+1}：桌面版")
+            self.tab[i].pushButton_start.clicked.connect(self.click_start)
+            self.tab[i].pushButton_clear.clicked.connect(self.click_clear)
+            self.tab[i].pushButton_restart.clicked.connect(self.click_restart)
+            self.tab[i].listWidget.currentItemChanged.connect(self.click_list)
+            self.tab[i].textBrowser.textChanged.connect(self.text_changed)
+        #self.tabWidget.currentChanged.connect(self.tab_changed)
+        # Set the tab widget as the central widget
+        self.setCentralWidget(self.tabWidget)
 
     #开始/停止按键
     def click_start(self):
@@ -1444,10 +1442,7 @@ class MainWindow(QMainWindow):
     #清空日志按键
     def click_clear(self):
         current_index = self.tabWidget.currentIndex()
-        if current_index==0:
-            self.textBrowser.clear()
-        elif current_index==1:
-            self.textBrowser_2.clear()
+        self.tab[current_index].textBrowser.clear()
     #连接/断开按键
     def click_restart(self):
         current_index = self.tabWidget.currentIndex()
@@ -1459,12 +1454,8 @@ class MainWindow(QMainWindow):
     def click_list(self):
         #current tab index
         current_index = self.tabWidget.currentIndex()
-        if current_index==0:
-            lineEdit=self.lineEdit
-            listWidget=self.listWidget
-        elif current_index==1:
-            lineEdit=self.lineEdit_2
-            listWidget=self.listWidget_2
+        lineEdit=self.tab[current_index].lineEdit
+        listWidget=self.tab[current_index].listWidget
         #current list index
         index=listWidget.currentRow()+1
         #设置默认次数
@@ -1485,19 +1476,17 @@ class MainWindow(QMainWindow):
                 lineEdit.setText('10')
     #自动显示最新日志
     def text_changed(self):
-        #tab 1
-        textBrowser=self.textBrowser
+        #current tab
+        current_index=self.tabWidget.currentIndex()
+        textBrowser=self.tab[current_index].textBrowser
         #scroll to bottom
         scrollbar=textBrowser.verticalScrollBar()
         scrollbar.setValue(scrollbar.maximum())
-    def text_changed_2(self):
-        #tab 2
-        textBrowser=self.textBrowser_2
-        #scroll to bottom
-        scrollbar=textBrowser.verticalScrollBar()
-        scrollbar.setValue(scrollbar.maximum())
+    def tab_changed(self, index):
+        print(f"Tab {index} clicked")
     
 ####################################################
+#多线程
 class MyThread(QThread):
     finished = pyqtSignal(int)
     def __init__(self, target=None, textBrowser=None, current_index=None):
@@ -1510,42 +1499,35 @@ class MyThread(QThread):
         if self.target:
             self.target(self.textBrowser,self.current_index)
             self.finished.emit(self.current_index)
-
-
 ####################################################
 if __name__ == '__main__':
+    #总设备数量
+    nthread=2
+    #初始化所有线程
+    t=[MyThread()]*nthread
+    cishu_max=[0]*nthread
+    isRunning=[False]*nthread
+    action.init_thread_variable(nthread)
+
     #GUI
     app = QApplication(sys.argv)
-    window = MainWindow()
+    window = MainWindow(nthread)
     window.show()
     
     #检测系统
-    window.textBrowser.append('操作系统: '+sys.platform)
-    if sys.platform=='darwin':
-        scalar=True
-    else:
-        scalar=False
+    print('操作系统: '+sys.platform)
+    #自动检测ADB设备
     action.startup(window)
-    # 读取文件 精度控制   显示名字
+    #读取文件
     imgs = action.load_imgs()
     #pyautogui.PAUSE = 0.05
     #pyautogui.FAILSAFE=False
-
-    start_time = time.time()
-    #textBrowser.append('程序启动，现在时间', time.ctime())
-
-    
-    start = time.time()
-    
+    #脚本模式
     mode = [0, tupo, yuhun, yuhun2, yuhundanren,\
         gouliang, gouliang2, gouliang3,\
         baigui, douji, huodong,\
         chouka, mijing, yaoqi,\
         qilingdanren, debug]
-    isRunning=False
-    #初始化双线程
-    t=[MyThread(),MyThread()]
-    cishu_max=[0,0]
-    isRunning=[False,False]
+
     sys.exit(app.exec())
 

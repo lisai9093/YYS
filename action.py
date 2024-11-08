@@ -2,22 +2,24 @@ import cv2,time,os,random,sys,mss,copy,subprocess,pyautogui
 import numpy
 from PyQt6.QtWidgets import QMessageBox,QPushButton,QInputDialog
 
-#initialization
-devices_tab=[None,None]
-adb_enable=[False,False]
+#global variables
+devices_tab=[None]
+adb_enable=[False]
 adb_path=None
 scalar=False
 scaling_factor=1
 
+#initialization thread
+def init_thread_variable(nthread):
+    global devices_tab,adb_enable
+    devices_tab=[None]*nthread
+    adb_enable=[False]*nthread
+
 def startup(window):
     global scalar,scaling_factor,monitor,adb_enable,adb_path,devices_tab
-    current_index = window.tabWidget.currentIndex()
-    if current_index==0:
-        textBrowser=window.textBrowser
-        pushButton_restart=window.pushButton_restart
-    elif current_index==1:
-        textBrowser=window.textBrowser_2
-        pushButton_restart=window.pushButton_restart_2
+    current_index=window.tabWidget.currentIndex()
+    textBrowser=window.tab[current_index].textBrowser
+    pushButton_restart=window.tab[current_index].pushButton_restart
     #检测ADB
     if sys.platform=='win32':
         textBrowser.append('检测模拟器')
@@ -49,7 +51,7 @@ def startup(window):
         comm=[adb_path,'devices']
         #textBrowser.append(comm)
         try:
-            out=subprocess.run(comm,shell=False,capture_output=True,check=False)
+            out=subprocess.run(comm,capture_output=True,timeout=1)
             out=out.stdout.decode('utf-8')
         except:
             textBrowser.append('ADB error')
@@ -124,12 +126,8 @@ def startup(window):
 
 def reset_resolution(window):
     current_index = window.tabWidget.currentIndex()
-    if current_index==0:
-        textBrowser=window.textBrowser
-        pushButton_restart=window.pushButton_restart
-    elif current_index==1:
-        textBrowser=window.textBrowser_2
-        pushButton_restart=window.pushButton_restart_2
+    textBrowser=window.tab[current_index].textBrowser
+    pushButton_restart=window.tab[current_index].pushButton_restart
     if adb_enable[current_index]:
         textBrowser.append('重置安卓分辨率')
         comm=[adb_path,"-s",devices_tab[current_index],"shell","wm","size","reset"]
@@ -239,6 +237,7 @@ def locate(target,want, show=bool(0), msg=bool(0)):
 #按【文件内容，匹配精度，名称】格式批量聚聚要查找的目标图片，精度统一为0.95，名称为文件名
 def load_imgs():
     mubiao = {}
+    acc=0.95
     if scalar:
         path = os.getcwd() + '/png'
     else:
@@ -247,9 +246,8 @@ def load_imgs():
     for file in file_list:
         name = file.split('.')[0]
         file_path = path + '/' + file
-        a = [ cv2.imread(file_path) , 0.95, name]
+        a = [ cv2.imread(file_path),acc,name]
         mubiao[name] = a
-
     return mubiao
 
 #蜂鸣报警器，参数n为鸣叫次数
