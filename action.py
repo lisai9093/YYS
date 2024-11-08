@@ -1,5 +1,6 @@
 import cv2,time,os,random,sys,mss,copy,subprocess,pyautogui
 import numpy
+from PyQt6.QtWidgets import QMessageBox,QPushButton,QInputDialog
 
 #initialization
 devices_tab=[None,None]
@@ -28,25 +29,17 @@ def startup(window):
         elif os.path.isfile(mumu_path):
             textBrowser.append('检测到MuMu模拟器')
             adb_path=mumu_path
-            #选择模拟器端口
-            while True:
-                try:
-                    raw=input('选择MuMu模拟器端口（直接回车使用默认7555）：')
-                    port=int(raw)
-                except ValueError:
-                    if len(raw)==0:
-                        port=7555
-                        break
-                    textBrowser.append('请输入数字')
-                    continue
-                else:
-                    break
-            mumu_ip='127.0.0.1:'+str(port)
-            comm=[adb_path,'connect',mumu_ip]
-            out=subprocess.run(comm,shell=False,capture_output=True,check=False)
-            out=out.stdout.decode('utf-8')
-            textBrowser.append(out)
+            #获取端口信息
+            port, ok = QInputDialog.getInt(window, '模拟器端口', '输入MuMu模拟器端口（默认7555）：',7555,0,65535,1)
+            if ok:
+                textBrowser.append('模拟器端口：'+str(port))
+                mumu_ip='127.0.0.1:'+str(port)
+                comm=[adb_path,'connect',mumu_ip]
+                out=subprocess.run(comm,shell=False,capture_output=True,check=False)
+                out=out.stdout.decode('utf-8')
+                textBrowser.append(out)
         else:
+            #无模拟器
             adb_path=''
             out=''
     else:
@@ -75,7 +68,6 @@ def startup(window):
         if len(devices)==1:
             device=devices[0]
         else:
-            from PyQt6.QtWidgets import QMessageBox,QPushButton
             #popup window
             msg_box = QMessageBox()
             msg_box.setText("选择安卓设备")
@@ -83,7 +75,6 @@ def startup(window):
             for device in devices:
                 button = QPushButton(device)
                 msg_box.addButton(button, QMessageBox.ButtonRole.ActionRole)
-                
             result = msg_box.exec()
             device=devices[result-2]
 
