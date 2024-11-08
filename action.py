@@ -8,6 +8,16 @@ adb_enable=[False]
 adb_path=None
 scalar=False
 scaling_factor=1
+monitor=None
+#截屏，并裁剪以加速
+upleft = (0, 0)
+if scalar==True:
+    downright = (1136,750)
+else:
+    downright = (1136, 700)
+a,b = upleft
+c,d = downright
+monitor = {"top": b, "left": a, "width": c, "height": d}
 
 #initialization thread
 def init_thread_variable(nthread):

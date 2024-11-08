@@ -1338,7 +1338,7 @@ def start_stop(window):
     pushButton_start=window.tab[current_index].pushButton_start
     pushButton_restart=window.tab[current_index].pushButton_restart
 
-    if t[current_index].isRunning():
+    if isRunning[current_index]:
         #stop running job
         pushButton_start.setText('开始')
         pushButton_start.setEnabled(False)
@@ -1351,7 +1351,7 @@ def start_stop(window):
         mutex.unlock()  # Release the lock
         pushButton_start.setEnabled(True)
         pushButton_restart.setEnabled(True)
-    elif listWidget.selectedItems() and not t[current_index].isRunning():
+    elif listWidget.selectedItems() and not isRunning[current_index]:
         #已选择脚本，开始运行
         textBrowser.append(listWidget.currentItem().text())
         index=listWidget.currentRow()+1
@@ -1500,9 +1500,7 @@ if __name__ == '__main__':
     #总设备数量
     nthread=2
     #初始化所有线程
-    t=[MyThread()]
-    for i in range(nthread-1):
-        t.append(MyThread())
+    t=[None]*nthread
     cishu_max=[0]*nthread
     isRunning=[False]*nthread
     action.init_thread_variable(nthread)
