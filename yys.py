@@ -455,7 +455,7 @@ def gouliang(textBrowser,current_index):
                     right = (854, 420)
                     xy = action.cheat(right, 10, 10)
                     action.touch(xy,current_index)
-                    t = random.randint(50,80) / 100
+                    t = random.randint(100,300) / 100
                     time.sleep(t)
                     continue
                 else:
@@ -689,7 +689,7 @@ def gouliang3(textBrowser,current_index):
                     right = (854, 420)
                     xy = action.cheat(right, 10, 10)
                     action.touch(xy,current_index)
-                    t = random.randint(50,80) / 100
+                    t = random.randint(100,300) / 100
                     time.sleep(t)
                     continue
                 else:
@@ -1345,6 +1345,8 @@ def start_stop(window):
 
     if t[current_index].isRunning():
         #stop running job
+        pushButton_start.setText('开始')
+        pushButton_start.setEnabled(False)
         mutex.lock()  # Acquire the lock
         isRunning[current_index]=False
         t[current_index].quit()
@@ -1352,7 +1354,7 @@ def start_stop(window):
             textBrowser.append('已强制停止！')
             t[current_index].terminate()
         mutex.unlock()  # Release the lock
-        pushButton_start.setText('开始')
+        pushButton_start.setEnabled(True)
         pushButton_restart.setEnabled(True)
     elif listWidget.selectedItems() and not t[current_index].isRunning():
         #已选择脚本，开始运行
@@ -1417,6 +1419,7 @@ def thread_finished(current_index):
     pushButton_restart.setEnabled(True)
     isRunning[current_index]=False
     textBrowser.append('脚本已结束！')
+    action.alarm(1)
 ####################################################
 class MainWindow(QMainWindow):
     def __init__(self):

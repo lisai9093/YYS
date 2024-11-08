@@ -270,7 +270,9 @@ def alarm(n):
         import winsound
         winsound.Beep(frequency, duration)
     else:
-        os.system('afplay /System/Library/Sounds/Sosumi.aiff')
+        #os.system('afplay /System/Library/Sounds/Sosumi.aiff')
+        sys.stdout.write('\a')
+        sys.stdout.flush()
 
 #裁剪图片以缩小匹配范围，screen为原图内容，upleft、downright是目标区域的左上角、右下角坐标
 def cut(screen,upleft,downright): 
