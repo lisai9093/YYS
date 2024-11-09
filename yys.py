@@ -1350,7 +1350,7 @@ def start_stop(window):
         mutex.lock()  # Acquire the lock
         isRunning[current_index]=False
         t[current_index].quit()
-        if not t[current_index].wait(5000):  # Wait for 5 seconds
+        if not t[current_index].wait(10000):  # Wait for 10 seconds
             textBrowser.append('已强制停止！')
             t[current_index].terminate()
         mutex.unlock()  # Release the lock
@@ -1409,8 +1409,8 @@ def thread_finished(current_index):
     t_end = time.time()
     hours, rem = divmod(t_end-t[current_index].t_start, 3600)
     minutes, seconds = divmod(rem, 60)
-    textBrowser.append("运行时间：{:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds))
-    textBrowser.append(str(datetime.datetime.now()))
+    textBrowser.append("运行时间：{:0>2}:{:0>2}:{:0>2}".format(int(hours),int(minutes),int(seconds)))
+    textBrowser.append(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     #更新日志/按键
     pushButton_start.setText('开始')
     pushButton_restart.setEnabled(True)
