@@ -172,6 +172,7 @@ def screenshot(current_index):
         if screen is None:
             image_bytes = image_bytes.replace(b'\r\n', b'\n')
             screen = cv2.imdecode(numpy.frombuffer(image_bytes, numpy.uint8),cv2.IMREAD_COLOR)
+        screen = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
         #textBrowser.append('screen: ',screen)
         #textBrowser.append('screen size: ',screen.shape[1],screen.shape[0])
         return screen
@@ -192,10 +193,10 @@ def screenshot(current_index):
             screen = cv2.resize(screen, (int(screen.shape[1]*0.75), int(screen.shape[0]*0.75)),
                                 interpolation = cv2.INTER_LINEAR)
             #textBrowser.append('Screen size: ',screen.shape)
-            screen = cv2.cvtColor(screen, cv2.COLOR_BGRA2BGR)
+            screen = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
         else:
             screen = numpy.array(sct.grab(monitor))
-            screen = cv2.cvtColor(screen, cv2.COLOR_BGRA2BGR)
+            screen = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
         return screen
 
     
@@ -256,7 +257,7 @@ def load_imgs():
     for file in file_list:
         name = file.split('.')[0]
         file_path = path + '/' + file
-        a = [ cv2.imread(file_path),acc,name]
+        a = [cv2.cvtColor(cv2.imread(file_path),cv2.COLOR_BGR2RGB),acc,name]
         mubiao[name] = a
     return mubiao
 

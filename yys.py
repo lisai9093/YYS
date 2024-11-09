@@ -16,6 +16,7 @@ from PyQt6.QtWidgets import (
     QMainWindow,
     QTabWidget,
     QVBoxLayout,
+    QDialog,
 )
 from PyQt6.QtCore import QThread,pyqtSignal,QProcess,QMutex,Qt
 
@@ -1299,7 +1300,6 @@ def debug(textBrowser,current_index):
     from PyQt6.QtGui import QPixmap, QImage
     from PyQt6.QtWidgets import QMessageBox
     #截屏
-    #screen=action_adb.screenshot()
     screen=action.screenshot(current_index)
     textBrowser.append('screen: '+str(screen.shape[1])+' '+str(screen.shape[0]))
     screen = screen[0:screen.shape[0], 0:screen.shape[1]]
@@ -1307,19 +1307,17 @@ def debug(textBrowser,current_index):
     bytesPerLine = ch * w
     image = QImage(screen.data, w, h, bytesPerLine, QImage.Format.Format_RGB888)
 
-    # Create a label to display the image
-    label = QLabel()
-    label.setPixmap(QPixmap.fromImage(image))
+    # Create a popup window to display the screenshot
+    popup = QDialog()
+    popup.setWindowTitle("截图测试")
+    popup_label = QLabel()
+    popup_label.setPixmap(QPixmap.fromImage(image))
+    popup_layout = QVBoxLayout()
+    popup_layout.addWidget(popup_label)
+    popup.setLayout(popup_layout)
+    popup.adjustSize()
+    popup.exec()
 
-    msg_box = QMessageBox()
-    msg_box.setWindowTitle("Image Popup")
-    # Set the label as the central widget of the main window
-    layout = QVBoxLayout()
-    layout.addWidget(label)
-    msg_box.setLayout(layout)
-    msg_box.exec()
-    #time.sleep(3)
-    return
 ####################################################
 def sleep_fast(t=0,current_index=None):
     #return value indicates interrupt happens
