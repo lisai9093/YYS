@@ -883,7 +883,7 @@ def douji(textBrowser,current_index):
                 elif i=='doujiquxiao':
                     refresh=0
                     doujipaidui=doujipaidui+1
-                    textBrowser.append('斗技搜索:',doujipaidui)
+                    textBrowser.append('斗技搜索:'+str(doujipaidui))
                     if doujipaidui>5:
                         doujipaidui=0
                         textBrowser.append('取消搜索')
