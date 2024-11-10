@@ -3,3 +3,4 @@
 *.swp
 __pycache__
 .venv
+screenshot.png
