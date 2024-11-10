@@ -1301,15 +1301,20 @@ def debug(textBrowser,current_index):
     from PyQt6.QtWidgets import QMessageBox
     #截屏
     screen=action.screenshot(current_index)
-    textBrowser.append('screen: '+str(screen.shape[1])+' '+str(screen.shape[0]))
+    textBrowser.append('截图分辨率: '+str(screen.shape[1])+'x'+str(screen.shape[0]))
     screen = screen[0:screen.shape[0], 0:screen.shape[1]]
     h, w, ch = screen.shape
     bytesPerLine = ch * w
     image = QImage(screen.data, w, h, bytesPerLine, QImage.Format.Format_RGB888)
+    #save image
+    if image.save('screenshot.png'):
+        textBrowser.append('已保存截图到 screenshot.png')
+    else:
+        textBrowser.append('保存截图失败')
 
     # Create a popup window to display the screenshot
     popup = QDialog()
-    popup.setWindowTitle("截图测试")
+    popup.setWindowTitle("屏幕截图")
     popup_label = QLabel()
     popup_label.setPixmap(QPixmap.fromImage(image))
     popup_layout = QVBoxLayout()

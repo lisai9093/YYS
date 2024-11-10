@@ -95,7 +95,7 @@
     </item>
     <item>
      <property name="text">
-      <string>15 Debug模式</string>
+      <string>15 屏幕截图并保存</string>
      </property>
     </item>
    </widget>
