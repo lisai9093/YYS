@@ -5,8 +5,8 @@
 
 2. 配置程序环境
 安装好python后还需要另外安装4个python库，分别是opencv-python，pyautogui，mss，pyqt6。这个步骤Windows和Mac略有不同：
-Windows/Linux：打开命令行（cmd）或者powershell，然后运行 pip install -r requirements.txt
-Mac：在终端（terminal）下分别运行 pip3 install opencv-python pyautogui mss pyqt6
+Windows/Linux：打开命令行（cmd）或者powershell，然后运行：pip install -r requirements.txt
+Mac：在终端（terminal）下运行：pip3 install -r requirements.txt
 
 3. 运行脚本
 推荐系统自带的终端Terminal，使用python3 yys.py 方式运行。推荐使用雷电模拟器因为会自动设置ADB地址，MuMu模拟器会相对麻烦一些需要手动输入ADB端口。
