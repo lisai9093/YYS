@@ -1,7 +1,7 @@
 感谢anywheretogo大佬提供的脚本框架，此脚本在原作基础上加入了很多功能，也修复了一些问题。开发测试均基于体验服，平台为电脑桌面版和安卓（支持模拟器和实体机多开）。本人体验服玩家，所以活动会根据体服尽快更新。
 
 1. 安装python
-此脚本兼容Windows/Mac系统，并支持ADB使用模拟器，对于不了解python的用户，首先要安装python官方的必要安装包。下载地址: [https://www.python.org/downloads/release/python-31011/](https://www.python.org/downloads/release/python-3124/)， 选择对应的系统安装文件。
+此脚本兼容Windows/Mac系统，并支持ADB使用模拟器，对于不了解python的用户，首先要安装python官方的必要安装包。下载地址: [Python 3.12.4](https://www.python.org/downloads/release/python-3124/)， 选择对应的系统安装文件。
 
 2. 配置程序环境
 安装好python后还需要另外安装4个python库，分别是opencv-python，pyautogui，mss，pyqt6。这个步骤Windows和Mac略有不同：
