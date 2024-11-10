@@ -1,0 +1,4 @@
+opencv-python>=4.10.0.84
+pyautogui>=0.9.54
+mss>=9
+pyqt6>=6.7.1

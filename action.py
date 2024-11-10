@@ -1,38 +1,57 @@
 import cv2,time,os,random,sys,mss,copy,subprocess,pyautogui
 import numpy
+from PyQt6.QtWidgets import QMessageBox,QPushButton,QInputDialog
 
-def startup():
-    global scalar,scaling_factor,adb_enable,adb_path,device
+#global variables
+devices_tab=[None]
+adb_enable=[False]
+adb_path=None
+scalar=False
+scaling_factor=1
+monitor=None
+#截屏，并裁剪以加速
+upleft = (0, 0)
+if scalar==True:
+    downright = (1136,750)
+else:
+    downright = (1136, 700)
+a,b = upleft
+c,d = downright
+monitor = {"top": b, "left": a, "width": c, "height": d}
+
+#initialization thread
+def init_thread_variable(nthread):
+    global devices_tab,adb_enable
+    devices_tab=[None]*nthread
+    adb_enable=[False]*nthread
+
+def startup(window):
+    global scalar,scaling_factor,monitor,adb_enable,adb_path,devices_tab
+    current_index=window.tabWidget.currentIndex()
+    textBrowser=window.tab[current_index].textBrowser
+    pushButton_restart=window.tab[current_index].pushButton_restart
     #检测ADB
     if sys.platform=='win32':
-        print('检测模拟器')
+        textBrowser.append('检测模拟器')
         mumu_path="C:\\Program Files\\Netease\\MuMuPlayer-12.0\\shell\\adb.exe"
         ld_path="C:\\leidian\\LDPlayer9\\adb.exe"
         if os.path.isfile(ld_path):
-            print('检测到雷电模拟器')
+            textBrowser.append('检测到雷电模拟器')
             adb_path=ld_path
         elif os.path.isfile(mumu_path):
-            print('检测到MuMu模拟器')
+            textBrowser.append('检测到MuMu模拟器')
             adb_path=mumu_path
-            #选择模拟器端口
-            while True:
-                try:
-                    raw=input('选择MuMu模拟器端口（直接回车使用默认7555）：')
-                    port=int(raw)
-                except ValueError:
-                    if len(raw)==0:
-                        port=7555
-                        break
-                    print('请输入数字')
-                    continue
-                else:
-                    break
-            mumu_ip='127.0.0.1:'+str(port)
-            comm=[adb_path,'connect',mumu_ip]
-            out=subprocess.run(comm,shell=False,capture_output=True,check=False)
-            out=out.stdout.decode('utf-8')
-            print(out)
+            #获取端口信息
+            port, ok = QInputDialog.getInt(window, '模拟器端口', '输入MuMu模拟器端口（默认7555）：',7555,0,65535,1)
+            if ok:
+                textBrowser.append('模拟器端口：'+str(port))
+                mumu_ip='127.0.0.1:'+str(port)
+                comm=[adb_path,'connect',mumu_ip]
+                out=subprocess.run(comm,shell=False,capture_output=True,check=False)
+                out=out.stdout.decode('utf-8')
+                textBrowser.append(out)
         else:
+            #无模拟器
             adb_path=''
             out=''
     else:
@@ -40,18 +59,18 @@ def startup():
 
     if len(adb_path)>0:
         comm=[adb_path,'devices']
-        #print(comm)
+        #textBrowser.append(comm)
         try:
-            out=subprocess.run(comm,shell=False,capture_output=True,check=False)
+            out=subprocess.run(comm,capture_output=True,timeout=1)
             out=out.stdout.decode('utf-8')
         except:
-            print('ADB error')
+            textBrowser.append('ADB error')
             out=''
-        print(out)
+        textBrowser.append(out)
         out=out.splitlines()
     if len(out)>2:
-        print('监测到ADB设备，默认使用安卓截图')
-        adb_enable=True
+        textBrowser.append('监测到ADB设备，默认使用安卓截图')
+        adb_enable[current_index]=True
         #check number of devices
         devices=[]
         for device in out:
@@ -61,64 +80,79 @@ def startup():
         if len(devices)==1:
             device=devices[0]
         else:
-            for idx,device in enumerate(devices):
-                print(idx+1,' ',device)
-            while True:
-                try:
-                    idx=int(input('监测到多个安卓设备，请选择想要运行的设备(1-'+str(len(devices))+')：'))
-                    device=devices[idx-1]
-                except ValueError:
-                    print('请输入数字')
-                    continue
-                except:
-                    print('数字超出范围(1-'+str(len(devices))+')')
-                else:
-                    break
-        print('使用设备：',device)
+            #popup window
+            msg_box = QMessageBox()
+            msg_box.setText("选择安卓设备")
+            # Change the button texts
+            for device in devices:
+                button = QPushButton(device)
+                msg_box.addButton(button, QMessageBox.ButtonRole.ActionRole)
+            result = msg_box.exec()
+            device=devices[result-2]
+
+        textBrowser.append('使用设备：'+device)
+        devices_tab[current_index]=device
+        window.tabWidget.setTabText(current_index, '设备'+str(current_index+1)+'：'+device)
+        pushButton_restart.setText('断开ADB')
         #change resolution
-        screen=screenshot([])
+        screen=screenshot(current_index)
         w=screen.shape[0]
         h=screen.shape[1]
-        print('原始分辨率：',w,'x',h)
+        textBrowser.append('原始分辨率：'+str(w)+'x'+str(h))
         if (w==640 and h==1136) or (h==640 and w==1136):
-            print('无需修改分辨率')
+            textBrowser.append('无需修改分辨率')
         else:
             if w>h:
                 comm=[adb_path,"-s",device,"shell","wm","size","1136x640"]
                 subprocess.run(comm,shell=False)
-                print('修改成桌面版分辨率: 1136x640')
+                textBrowser.append('修改成桌面版分辨率: 1136x640')
             elif w<=h:
                 comm=[adb_path,"-s",device,"shell","wm","size","640x1136"]
                 subprocess.run(comm,shell=False)
-                print('修改成桌面版分辨率: 640x1136')
+                textBrowser.append('修改成桌面版分辨率: 640x1136')
     else:
-        print('未监测到ADB设备，默认使用桌面版')
-        print('请把桌面版窗口移动到第一个屏幕的左上角')
-        adb_enable=False
+        textBrowser.append('未监测到ADB设备，默认使用桌面版')
+        textBrowser.append('请把桌面版窗口移动到第一个屏幕的左上角')
+        adb_enable[current_index]=False
         pyautogui.FAILSAFE=False
 
     #检测系统
-    if sys.platform=='darwin' and not adb_enable:
+    if sys.platform=='darwin' and not adb_enable[current_index]:
         scalar=True
         scaling_factor=1/2
     else:
         scalar=False
         scaling_factor=1
 
-    #截屏起点
-    a=0
+    #截屏，并裁剪以加速
+    upleft = (0, 0)
+    if scalar==True:
+        downright = (1136,750)
+    else:
+        downright = (1136, 700)
+    a,b = upleft
+    c,d = downright
+    monitor = {"top": b, "left": a, "width": c, "height": d}
 
-def reset_resolution():
-    global adb_enable,adb_path
-    if adb_enable:
-        print('重置安卓分辨率')
-        comm=[adb_path,"-s",device,"shell","wm","size","reset"]
+def reset_resolution(window):
+    current_index = window.tabWidget.currentIndex()
+    textBrowser=window.tab[current_index].textBrowser
+    pushButton_restart=window.tab[current_index].pushButton_restart
+    if adb_enable[current_index]:
+        textBrowser.append('重置安卓分辨率')
+        comm=[adb_path,"-s",devices_tab[current_index],"shell","wm","size","reset"]
         subprocess.run(comm,shell=False)
+        #remove device info
+        devices_tab[current_index]=None
+        adb_enable[current_index]=False
+        #日志更新
+        textBrowser.append('已断开连接')
+        window.tabWidget.setTabText(current_index, '设备'+str(current_index+1)+'：桌面版')
+        pushButton_restart.setText('连接ADB')
 
-def screenshot(monitor):
-    global adb_enable,adb_path
-    if adb_enable:
-        comm=[adb_path,"-s",device,"shell","screencap","-p"]
+def screenshot(current_index):
+    if adb_enable[current_index]:
+        comm=[adb_path,"-s",devices_tab[current_index],"shell","screencap","-p"]
         #隐藏终端窗口
         if sys.platform=='win32':
             startupinfo = subprocess.STARTUPINFO()
@@ -138,8 +172,9 @@ def screenshot(monitor):
         if screen is None:
             image_bytes = image_bytes.replace(b'\r\n', b'\n')
             screen = cv2.imdecode(numpy.frombuffer(image_bytes, numpy.uint8),cv2.IMREAD_COLOR)
-        #print('screen: ',screen)
-        #print('screen size: ',screen.shape[1],screen.shape[0])
+        screen = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
+        #textBrowser.append('screen: ',screen)
+        #textBrowser.append('screen size: ',screen.shape[1],screen.shape[0])
         return screen
 
     with mss.mss() as sct:
@@ -153,15 +188,15 @@ def screenshot(monitor):
             screen=sct.grab(monitor2)
             #mss.tools.to_png(screen.rgb, screen.size, output="screenshot.png")
             screen = numpy.array(screen)
-            #print('Screen size: ',screen.shape)
+            #textBrowser.append('Screen size: ',screen.shape)
             #MuMu助手默认拉伸4/3倍
             screen = cv2.resize(screen, (int(screen.shape[1]*0.75), int(screen.shape[0]*0.75)),
                                 interpolation = cv2.INTER_LINEAR)
-            #print('Screen size: ',screen.shape)
-            screen = cv2.cvtColor(screen, cv2.COLOR_BGRA2BGR)
+            #textBrowser.append('Screen size: ',screen.shape)
+            screen = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
         else:
             screen = numpy.array(sct.grab(monitor))
-            screen = cv2.cvtColor(screen, cv2.COLOR_BGRA2BGR)
+            screen = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
         return screen
 
     
@@ -171,10 +206,10 @@ def locate(target,want, show=bool(0), msg=bool(0)):
     want,treshold,c_name=want[0],want[1],want[2]
     result=cv2.matchTemplate(target,want,cv2.TM_CCOEFF_NORMED)
     location=numpy.where(result>=treshold)
-    #print(location)
+    #textBrowser.append(location)
 
     if msg:  #显示正式寻找目标名称，调试时开启
-        print(c_name,'searching... ')
+        textBrowser.append(c_name,'searching... ')
 
     h,w=want.shape[:-1] #want.shape[:-1]
 
@@ -188,7 +223,7 @@ def locate(target,want, show=bool(0), msg=bool(0)):
         cv2.circle(target,(x,y),10,(0,0,255),3)
 
         if msg:
-            print(c_name,'we find it !!! ,at',x,y)
+            textBrowser.append(c_name,'we find it !!! ,at',x,y)
 
         if scalar:
             x,y=int(x*scaling_factor),int(y*scaling_factor)
@@ -198,13 +233,13 @@ def locate(target,want, show=bool(0), msg=bool(0)):
         loc_pos.append([x,y])
 
     if show:  #在图上显示寻找的结果，调试时开启
-        print('Debug: show action.locate')
+        textBrowser.append('Debug: show action.locate')
         cv2.imshow('we get',target)
         cv2.waitKey(0) 
         cv2.destroyAllWindows()
 
     if len(loc_pos)==0:
-        #print(c_name,'not find')
+        #textBrowser.append(c_name,'not find')
         pass
 
     return loc_pos
@@ -212,8 +247,8 @@ def locate(target,want, show=bool(0), msg=bool(0)):
 
 #按【文件内容，匹配精度，名称】格式批量聚聚要查找的目标图片，精度统一为0.95，名称为文件名
 def load_imgs():
-    global scalar
     mubiao = {}
+    acc=0.95
     if scalar:
         path = os.getcwd() + '/png'
     else:
@@ -222,9 +257,8 @@ def load_imgs():
     for file in file_list:
         name = file.split('.')[0]
         file_path = path + '/' + file
-        a = [ cv2.imread(file_path) , 0.95, name]
+        a = [cv2.cvtColor(cv2.imread(file_path),cv2.COLOR_BGR2RGB),acc,name]
         mubiao[name] = a
-
     return mubiao
 
 #蜂鸣报警器，参数n为鸣叫次数
@@ -236,7 +270,9 @@ def alarm(n):
         import winsound
         winsound.Beep(frequency, duration)
     else:
-        os.system('afplay /System/Library/Sounds/Sosumi.aiff')
+        #os.system('afplay /System/Library/Sounds/Sosumi.aiff')
+        sys.stdout.write('\a')
+        sys.stdout.flush()
 
 #裁剪图片以缩小匹配范围，screen为原图内容，upleft、downright是目标区域的左上角、右下角坐标
 def cut(screen,upleft,downright): 
@@ -262,13 +298,11 @@ def cheat(p, w, h):
     return(y)
 
 # 点击屏幕，参数pos为目标坐标
-def touch(pos):
-    global adb_enable
-    #print(adb_enable)
+def touch(pos,current_index):
     x, y = pos
-    if adb_enable:
-        comm=[adb_path,"-s",device,"shell","input","tap",str(x),str(y)]
-        #print('Command: ',comm)
+    if adb_enable[current_index]:
+        comm=[adb_path,"-s",devices_tab[current_index],"shell","input","tap",str(x),str(y)]
+        #textBrowser.append('Command: ',comm)
         subprocess.run(comm,shell=False)
     else:
         pyautogui.click(pos)
