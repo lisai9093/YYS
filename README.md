@@ -12,7 +12,7 @@ Windows/Linux：打开命令行（cmd）或者powershell运行：`pip install -r
 macOS：在终端（terminal）下运行：`pip3 install -r requirements.txt`
 
 # 3. 运行脚本
-推荐系统自带的终端Terminal，运行`./start.sh`。推荐使用雷电模拟器因为会自动设置ADB地址，MuMu模拟器会相对麻烦一些需要手动输入ADB端口。<br/>
+推荐系统自带的终端Terminal，Windows系统直接双击运行`start.bat`，macOS/Linux需要在终端运行`./start.sh`。推荐使用雷电模拟器因为会自动设置ADB地址，MuMu模拟器会相对麻烦一些需要手动输入ADB端口。<br/>
 桌面版必须使用原始分辨率即1136x640（安卓/模拟器会自动设置成桌面版分辨率），其它分辨率则需要重新截图才能正常工作。另外桌面版（非模拟器）游戏窗口务必要移动到左上角。<br/>
 
 如果有任何问题请在讨论区发帖。解放双手 Have fun!
