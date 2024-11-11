@@ -1,4 +1,4 @@
-import cv2,time,random,os,datetime
+import cv2,time,random,os,datetime,configparser
 import os,sys,traceback
 import numpy as np
 import mss
@@ -1513,19 +1513,26 @@ class MainWindow(QMainWindow):
         print(f"Tab {index} clicked")
 ####################################################
 if __name__ == '__main__':
+    #初始化设置
+    config = configparser.ConfigParser(inline_comment_prefixes=';')
+    config.sections()
+    config.read('config.ini')
+    #debug模式
+    if config['general']['debug'].lower() in ['true', '1', 'yes']:
+        import faulthandler
+        faulthandler.enable()
     #总设备数量
-    nthread=2
+    nthread=int(config['general']['Nthread'])
+    print('线程总数量：',nthread)
     #初始化所有线程
     t=[None]*nthread
     cishu_max=[0]*nthread
     isRunning=[False]*nthread
     action.init_thread_variable(nthread)
-
     #GUI
     app = QApplication(sys.argv)
     window = MainWindow(nthread)
     window.show()
-    
     #检测系统
     print('操作系统: '+sys.platform)
     #自动检测ADB设备
