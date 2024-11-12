@@ -11,10 +11,14 @@ scaling_factor=1
 monitor=None
 #截屏，并裁剪以加速
 upleft = (0, 0)
-if scalar==True:
-    downright = (1136,750)
+downright = (1136, 700)
+#默认桌面版
+if sys.platform=='darwin':
+    scalar=True
+    scaling_factor=1/2
 else:
-    downright = (1136, 700)
+    scalar=False
+    scaling_factor=1
 a,b = upleft
 c,d = downright
 monitor = {"top": b, "left": a, "width": c, "height": d}
