@@ -155,6 +155,7 @@ def reset_resolution(window):
         pushButton_restart.setText('连接ADB')
 
 def screenshot(thread_id):
+    #ADB截屏
     if adb_enable[thread_id]:
         comm=[adb_path,"-s",devices_tab[thread_id],"shell","screencap","-p"]
         #隐藏终端窗口
@@ -171,43 +172,47 @@ def screenshot(thread_id):
             image_bytes = subprocess.run(comm,shell=False,stdout=subprocess.PIPE,stderr=subprocess.PIPE,**invisibledict)
         else:
             image_bytes = subprocess.run(comm,shell=False,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        image_bytes = image_bytes.stdout
-        screen = cv2.imdecode(numpy.frombuffer(image_bytes, numpy.uint8),cv2.IMREAD_COLOR)
+        image_bytes=image_bytes.stdout
+        image_array=numpy.frombuffer(image_bytes, numpy.uint8)
+        #sometime numpy returns None
+        if image_array is not None:
+            screen=cv2.imdecode(image_array,cv2.IMREAD_COLOR)
+        else:
+            screen=None
         if screen is None:
             image_bytes = image_bytes.replace(b'\r\n', b'\n')
             screen = cv2.imdecode(numpy.frombuffer(image_bytes, numpy.uint8),cv2.IMREAD_COLOR)
-        screen = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
-        #textBrowser.append('screen: ',screen)
-        #textBrowser.append('screen size: ',screen.shape[1],screen.shape[0])
-        return screen
+    else:
+        #桌面版截屏
+        with mss.mss() as sct:
+            if scalar:
+                #{"top": b, "left": a, "width": c, "height": d}
+                #shrink monitor to half due to macOS default DPI scaling
+                monitor2=copy.deepcopy(monitor)
+                monitor2["width"]=int(monitor2["width"]*scaling_factor)
+                monitor2["height"]=int(monitor2["height"]*scaling_factor)
+                screen=sct.grab(monitor2)
+                #mss.tools.to_png(screen.rgb, screen.size, output="screenshot.png")
+                screen = numpy.array(screen)
+                #textBrowser.append('Screen size: ',screen.shape)
+                #MuMu助手默认拉伸4/3倍
+                screen = cv2.resize(screen, (int(screen.shape[1]*0.75), int(screen.shape[0]*0.75)),
+                                    interpolation = cv2.INTER_LINEAR)
+            else:
+                screen = numpy.array(sct.grab(monitor))
 
-    with mss.mss() as sct:
-        if scalar:
-            #MSS
-            #{"top": b, "left": a, "width": c, "height": d}
-            #shrink monitor to half due to macOS default DPI scaling
-            monitor2=copy.deepcopy(monitor)
-            monitor2["width"]=int(monitor2["width"]*scaling_factor)
-            monitor2["height"]=int(monitor2["height"]*scaling_factor)
-            screen=sct.grab(monitor2)
-            #mss.tools.to_png(screen.rgb, screen.size, output="screenshot.png")
-            screen = numpy.array(screen)
-            #textBrowser.append('Screen size: ',screen.shape)
-            #MuMu助手默认拉伸4/3倍
-            screen = cv2.resize(screen, (int(screen.shape[1]*0.75), int(screen.shape[0]*0.75)),
-                                interpolation = cv2.INTER_LINEAR)
-            #textBrowser.append('Screen size: ',screen.shape)
-            screen = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
-        else:
-            screen = numpy.array(sct.grab(monitor))
-            screen = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
+    #all else failed
+    if screen is None:
         return screen
+    screen = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
+    return screen
 
-    
 #在背景查找目标图片，并返回查找到的结果坐标列表，target是背景，want是要找目标
 def locate(target,want, show=bool(0), msg=bool(0)):
     loc_pos=[]
     want,treshold,c_name=want[0],want[1],want[2]
+    if target is None:
+        return loc_pos
     result=cv2.matchTemplate(target,want,cv2.TM_CCOEFF_NORMED)
     location=numpy.where(result>=treshold)
     #textBrowser.append(location)
