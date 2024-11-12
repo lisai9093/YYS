@@ -27,9 +27,9 @@ def init_thread_variable(nthread):
 
 def startup(window):
     global scalar,scaling_factor,monitor,adb_enable,adb_path,devices_tab
-    current_index=window.tabWidget.currentIndex()
-    textBrowser=window.tab[current_index].textBrowser
-    pushButton_restart=window.tab[current_index].pushButton_restart
+    thread_id=window.tabWidget.currentIndex()
+    textBrowser=window.tab[thread_id].textBrowser
+    pushButton_restart=window.tab[thread_id].pushButton_restart
     #检测ADB
     if sys.platform=='win32':
         textBrowser.append('检测模拟器')
@@ -70,7 +70,7 @@ def startup(window):
         out=out.splitlines()
     if len(out)>2:
         textBrowser.append('监测到ADB设备，默认使用安卓截图')
-        adb_enable[current_index]=True
+        adb_enable[thread_id]=True
         #check number of devices
         devices=[]
         for device in out:
@@ -91,11 +91,11 @@ def startup(window):
             device=devices[result-2]
 
         textBrowser.append('使用设备：'+device)
-        devices_tab[current_index]=device
-        window.tabWidget.setTabText(current_index, '设备'+str(current_index+1)+'：'+device)
+        devices_tab[thread_id]=device
+        window.tabWidget.setTabText(thread_id, '设备'+str(thread_id+1)+'：'+device)
         pushButton_restart.setText('断开ADB')
         #change resolution
-        screen=screenshot(current_index)
+        screen=screenshot(thread_id)
         w=screen.shape[0]
         h=screen.shape[1]
         textBrowser.append('原始分辨率：'+str(w)+'x'+str(h))
@@ -113,11 +113,11 @@ def startup(window):
     else:
         textBrowser.append('未监测到ADB设备，默认使用桌面版')
         textBrowser.append('请把桌面版窗口移动到第一个屏幕的左上角')
-        adb_enable[current_index]=False
+        adb_enable[thread_id]=False
         pyautogui.FAILSAFE=False
 
     #检测系统
-    if sys.platform=='darwin' and not adb_enable[current_index]:
+    if sys.platform=='darwin' and not adb_enable[thread_id]:
         scalar=True
         scaling_factor=1/2
     else:
@@ -135,24 +135,24 @@ def startup(window):
     monitor = {"top": b, "left": a, "width": c, "height": d}
 
 def reset_resolution(window):
-    current_index = window.tabWidget.currentIndex()
-    textBrowser=window.tab[current_index].textBrowser
-    pushButton_restart=window.tab[current_index].pushButton_restart
-    if adb_enable[current_index]:
+    thread_id = window.tabWidget.currentIndex()
+    textBrowser=window.tab[thread_id].textBrowser
+    pushButton_restart=window.tab[thread_id].pushButton_restart
+    if adb_enable[thread_id]:
         textBrowser.append('重置安卓分辨率')
-        comm=[adb_path,"-s",devices_tab[current_index],"shell","wm","size","reset"]
+        comm=[adb_path,"-s",devices_tab[thread_id],"shell","wm","size","reset"]
         subprocess.run(comm,shell=False)
         #remove device info
-        devices_tab[current_index]=None
-        adb_enable[current_index]=False
+        devices_tab[thread_id]=None
+        adb_enable[thread_id]=False
         #日志更新
         textBrowser.append('已断开连接')
-        window.tabWidget.setTabText(current_index, '设备'+str(current_index+1)+'：桌面版')
+        window.tabWidget.setTabText(thread_id, '设备'+str(thread_id+1)+'：桌面版')
         pushButton_restart.setText('连接ADB')
 
-def screenshot(current_index):
-    if adb_enable[current_index]:
-        comm=[adb_path,"-s",devices_tab[current_index],"shell","screencap","-p"]
+def screenshot(thread_id):
+    if adb_enable[thread_id]:
+        comm=[adb_path,"-s",devices_tab[thread_id],"shell","screencap","-p"]
         #隐藏终端窗口
         if sys.platform=='win32':
             startupinfo = subprocess.STARTUPINFO()
@@ -246,13 +246,10 @@ def locate(target,want, show=bool(0), msg=bool(0)):
 
 
 #按【文件内容，匹配精度，名称】格式批量聚聚要查找的目标图片，精度统一为0.95，名称为文件名
-def load_imgs():
+def load_imgs(game_name):
     mubiao = {}
     acc=0.95
-    if scalar:
-        path = os.getcwd() + '/png'
-    else:
-        path = os.getcwd() + '/png'
+    path = os.getcwd()+'/'+game_name+'/png'
     file_list = os.listdir(path)
     for file in file_list:
         name = file.split('.')[0]
@@ -298,16 +295,14 @@ def cheat(p, w, h):
     return(y)
 
 # 点击屏幕，参数pos为目标坐标
-def touch(pos,current_index):
+def touch(pos,thread_id):
     x, y = pos
-    if adb_enable[current_index]:
-        comm=[adb_path,"-s",devices_tab[current_index],"shell","input","tap",str(x),str(y)]
+    if adb_enable[thread_id]:
+        comm=[adb_path,"-s",devices_tab[thread_id],"shell","input","tap",str(x),str(y)]
         #textBrowser.append('Command: ',comm)
         subprocess.run(comm,shell=False)
     else:
         pyautogui.click(pos)
-
-
 
 
 

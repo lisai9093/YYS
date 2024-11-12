@@ -1,3 +1,2 @@
 @echo off
-python yys.py %*
-REM pause
+python main.py %*
