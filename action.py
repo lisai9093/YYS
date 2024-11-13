@@ -261,7 +261,7 @@ def load_imgs(game_name):
     path = os.getcwd()+'/'+game_name+'/png'
     file_list = os.listdir(path)
     for file in file_list:
-        if not file.endswith('.png'):
+        if not file.lower().endswith(('.png', '.jpg', '.jpeg')):
             continue
         name = file.split('.')[0]
         file_path = path + '/' + file
