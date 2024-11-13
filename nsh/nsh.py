@@ -1,10 +1,6 @@
 import sys,random,time
-from PyQt6.QtCore import QObject,pyqtSignal,QMutex
+from PyQt6.QtCore import QObject,pyqtSignal
 import action
-
-#global variables
-last_click=None
-mutex = QMutex()
 
 class Worker(QObject):
     finished = pyqtSignal(int)
@@ -12,28 +8,12 @@ class Worker(QObject):
     
     def __init__(self,thread_id=None,index=None,cishu_max=None):
         super().__init__()
-        self.game_name='nsh'
+        self.game_name='yys'
         self.thread_id = thread_id
-        self.mode = [0, self.tupo, self.yuhun, self.yuhun2, self.yuhundanren,\
-                    self.gouliang, self.gouliang2, self.gouliang3,\
-                    self.baigui, self.douji, self.huodong,\
-                    self.chouka, self.mijing, self.yaoqi,\
-                    self.qilingdanren]
-        self.func_names=['0 屏幕截图并保存',\
-        '1 结界突破',\
-        '2 御魂(司机)',\
-        '3 御魂(打手)',\
-        '4 御魂/御灵/契灵探查(单刷)',\
-        '5 探索(司机)',\
-        '6 探索(打手)',\
-        '7 探索(单刷)',\
-        '8 百鬼夜行',\
-        '9 自动斗技',\
-        '10 当前活动',\
-        '11 厕纸抽卡',\
-        '12 秘境召唤',\
-        '13 妖气封印/秘闻',\
-        '14 契灵boss（单刷）']
+        #设置默认功能和次数
+        self.func=[{'description':'0 屏幕截图并保存','func_name':0,'count_default':'inf'},\
+        {'description':'1 活动','func_name':self.huodong,'count_default':'inf'}]
+        #功能序号
         self.index=index
         self.cishu_max=cishu_max
         self.isRunning=False
@@ -43,7 +23,7 @@ class Worker(QObject):
     def run(self):
         #self.progress.emit('Thread is '+str(self.thread_id),self.thread_id)
         #self.progress.emit('Call function index '+str(self.index)+' with max count of '+str(self.cishu_max),self.thread_id)
-        command=self.mode[self.index]
+        command=self.func[self.index]['func_name']
         command()
         self.finished.emit(self.thread_id)
     
@@ -64,7 +44,7 @@ class Worker(QObject):
     ####################################################
     ########################################################
     #御魂司机
-    def yuhun():
+    def huodong():
         last_click=''
         cishu=0
         refresh=0
