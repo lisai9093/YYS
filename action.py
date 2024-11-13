@@ -261,6 +261,8 @@ def load_imgs(game_name):
     path = os.getcwd()+'/'+game_name+'/png'
     file_list = os.listdir(path)
     for file in file_list:
+        if not file.endswith('.png'):
+            continue
         name = file.split('.')[0]
         file_path = path + '/' + file
         a = [cv2.cvtColor(cv2.imread(file_path),cv2.COLOR_BGR2RGB),acc,name]

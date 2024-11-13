@@ -8,11 +8,12 @@ class Worker(QObject):
     
     def __init__(self,thread_id=None,index=None,cishu_max=None):
         super().__init__()
-        self.game_name='yys'
+        self.game_name='nsh'
         self.thread_id = thread_id
         #设置默认功能和次数
         self.func=[{'description':'0 屏幕截图并保存','func_name':0,'count_default':'inf'},\
-        {'description':'1 活动','func_name':self.huodong,'count_default':'inf'}]
+        {'description':'1 组队司机','func_name':self.huodong,'count_default':'inf'},\
+        {'description':'2 组队打手','func_name':self.huodong2,'count_default':'inf'}]
         #功能序号
         self.index=index
         self.cishu_max=cishu_max
@@ -43,31 +44,66 @@ class Worker(QObject):
     #以下是脚本功能代码
     ####################################################
     ########################################################
-    #御魂司机
-    def huodong():
+    #司机
+    def huodong(self):
         last_click=''
         cishu=0
         refresh=0
         
         while self.isRunning:
             #截屏
-            screen=action.screenshot()
+            screen=action.screenshot(self.thread_id)
 
             #自动点击通关结束后的页面
-            for i in ['jujue','tiaozhan','tiaozhan2',\
-                      'moren','queding','querenyuhun','ying',\
-                      'jiangli','jiangli2',\
-                      'jixu','shibai']:
+            for i in ['duihua','chuanjianduiwu','chukuimenjin','dagou',\
+                      'duiwujiaren','guanbi','tiaozhanshijian',\
+                      'tuichujian',\
+                      'yaoqing1','yaoqing2','tuihuijiantou']:
                 want = self.imgs[i]
                 size = want[0].shape
                 h, w , ___ = size
                 target = screen
                 pts = action.locate(target,want,0)
                 if not len(pts) == 0:
+                    self.message_output(i)
                     if last_click==i:
                         refresh=refresh+1
-                    elif i=='querenyuhun':
-                        refresh=refresh+2
+                    else:
+                        refresh=0
+                    last_click=i
+                    #self.message_output('重复次数：',refresh)
+                    self.message_output(i)
+                    t = random.randint(200,300) / 100
+                    if refresh>6 or cishu>self.cishu_max:
+                        self.message_output('进攻次数上限')
+                        return
+                    for index in range(len(pts)):
+                        xy = action.cheat(pts[index], w, h-10 )
+                        action.touch(xy,self.thread_id)
+                        if self.sleep_fast(t): return
+                    break
+        
+    #打手
+    def huodong2(self):
+        last_click=''
+        cishu=0
+        refresh=0
+        
+        while self.isRunning:
+            #截屏
+            screen=action.screenshot(self.thread_id)
+
+            #自动点击通关结束后的页面
+            for i in ['dagou','daiji']:
+                want = self.imgs[i]
+                size = want[0].shape
+                h, w , ___ = size
+                target = screen
+                pts = action.locate(target,want,0)
+                if not len(pts) == 0:
+                    self.message_output(i)
+                    if last_click==i:
+                        refresh=refresh+1
                     else:
                         refresh=0
                     last_click=i
@@ -77,9 +113,7 @@ class Worker(QObject):
                     if refresh>6 or cishu>self.cishu_max:
                         self.message_output('进攻次数上限')
                         return
-                    xy = action.cheat(pts[0], w, h-10 )
-                    action.touch(xy,self.thread_id)
-                    if self.sleep_fast(t): return
-                    break
-        
-   
+                    for index in range(len(pts)):
+                        xy = action.cheat(pts[index], w, h-10 )
+                        action.touch(xy,self.thread_id)
+                        if self.sleep_fast(t): return
