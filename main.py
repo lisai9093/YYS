@@ -1,4 +1,4 @@
-import sys,time,os,datetime,configparser,importlib
+import sys,time,os,datetime,configparser,importlib,argparse
 from functools import partial
 from PyQt6.uic import loadUi
 from PyQt6.QtWidgets import (
@@ -240,12 +240,19 @@ if __name__ == '__main__':
     config = configparser.ConfigParser(inline_comment_prefixes=';')
     config.sections()
     config.read('config.ini')
+    #inputs from terminal
+    parser = argparse.ArgumentParser(description='Input parameters')
+    parser.add_argument('-game', '--game', help='游戏名称')
+    parser.add_argument('-debug', '--debug', type=int, help='Debug模式')
+    args = parser.parse_args()
     #debug模式
-    if config['general']['debug'].lower() in ['true', '1', 'yes']:
+    if config['general']['debug'].lower() in ['true', '1', 'yes'] or args.debug['general']['debug'].lower() in ['true', '1', 'yes']:
         import faulthandler
         faulthandler.enable()
     #游戏名
     game_name=config['general']['game']
+    if args.game:
+        game_name=args.game
     print('加载游戏脚本文件: '+game_name)
     sys.path.insert(0, game_name)
     game = importlib.import_module(game_name)
