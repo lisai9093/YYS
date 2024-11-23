@@ -772,7 +772,7 @@ class Worker(QObject):
                 target = screen
                 pts2 = action.locate(target,want,0)
                 if not len(pts2) == 0:
-                    self.message_output('点击开始: ',pts[0])
+                    self.message_output('点击开始')
                     xy = action.cheat(pts[0], w, h-10 )
                     action.touch(xy,self.thread_id)
                     t = random.randint(15,30) / 100
@@ -782,15 +782,15 @@ class Worker(QObject):
                     index=random.randint(0,2)
                     pts2 = (300+index*340, 500)
                     self.message_output('选择押注: '+str(index))
-                    
                     xy = action.cheat(pts2, w, h-10 )
                     action.touch(xy,self.thread_id)
-                    t = random.randint(50,100) / 100
+                    t = random.randint(100,300) / 100
                     if self.sleep_fast(t): return
 
+                    self.message_output('点击开始')
                     xy = action.cheat(pts[0], w, h-10 )
                     action.touch(xy,self.thread_id)
-                    t = random.randint(15,30) / 100
+                    t = random.randint(100,200) / 100
                     if self.sleep_fast(t): return
 
 
