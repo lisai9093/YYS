@@ -700,14 +700,26 @@ class Worker(QObject):
 
             #设定目标，开始查找
             #进入后
-            for i in ['baigui','gailv','douzihuoqu','miaozhun','baiguijieshu']:
+            for i in ['baigui','gailv','douzihuoqu','miaozhun','baiguijieshu',\
+                    'jinru']:
                 want = self.imgs[i]
                 size = want[0].shape
                 h, w , ___ = size
                 target = screen
                 pts = action.locate(target,want,0)
                 if not len(pts) == 0:
-                    refresh=0
+                    if last_click==i:
+                        refresh=refresh+1
+                    else:
+                        refresh=0
+                        last_click=i
+                    if i=='jinru':
+                        if refresh==0:
+                            cishu=cishu+1
+                            self.message_output('进入百鬼:'+str(cishu)+'/'+str(self.cishu_max))
+                        if cishu>self.cishu_max:
+                            self.message_output('进攻次数上限')
+                            return
                     self.message_output('点击'+i)
                     xy = action.cheat(pts[0], w, h )
                     action.touch(xy,self.thread_id)
@@ -715,12 +727,14 @@ class Worker(QObject):
                     if self.sleep_fast(t): return
                     continue
 
-            want=self.imgs['inbaigui']
+            i='inbaigui'
+            want=self.imgs[i]
             target = screen
             pts = action.locate(target,want,0)
             if not len(pts) == 0:
                 #self.message_output('正在百鬼中')
-                want = self.imgs['blank']
+                i='blank'
+                want = self.imgs[i]
                 target = screen
                 pts = action.locate(target,want,0)
                 if len(pts) == 0:
@@ -730,31 +744,9 @@ class Worker(QObject):
                     pts2 = (640, 450)
                     xy = action.cheat(pts2, 100, 80)
                     action.touch(xy,self.thread_id)
-                    time.sleep(0.5)
+                    t = random.randint(15,30) / 100
+                    if self.sleep_fast(t): return
                     continue
-
-            i='jinru'
-            want = self.imgs[i]
-            size = want[0].shape
-            h, w , ___ = size
-            target = screen
-            pts = action.locate(target,want,0)
-            if not len(pts) == 0:
-                if last_click==i:
-                    refresh=refresh+1
-                else:
-                    refresh=0
-                    last_click=i
-                if refresh==0:
-                    cishu=cishu+1
-                if refresh>6 or cishu>self.cishu_max:
-                    self.message_output('进攻次数上限')
-                    return
-                self.message_output('进入百鬼:'+str(cishu)+'/'+str(self.cishu_max))
-                xy = action.cheat(pts[0], w, h-10 )
-                action.touch(xy,self.thread_id)
-                t = random.randint(10,20) / 100
-                if self.sleep_fast(t): return
 
             i='kaishi'
             want = self.imgs[i]
@@ -764,6 +756,7 @@ class Worker(QObject):
             pts = action.locate(target,want,0)
             if not len(pts) == 0:
                 refresh=0
+                last_click=i
                 self.message_output('选择押注界面')
                 i='ya'
                 want = self.imgs[i]
