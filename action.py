@@ -174,8 +174,8 @@ def screenshot(thread_id):
             image_bytes = subprocess.run(comm,shell=False,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         image_bytes=image_bytes.stdout
         image_array=numpy.frombuffer(image_bytes, numpy.uint8)
-        #sometime numpy returns None
-        if image_array is not None:
+        #sometime numpy returns empty
+        if image_array.size is not 0:
             screen=cv2.imdecode(image_array,cv2.IMREAD_COLOR)
         else:
             screen=None
