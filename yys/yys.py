@@ -800,7 +800,8 @@ class Worker(QObject):
             screen=action.screenshot(self.thread_id)
 
             for i in ['jujue','shoudong','zidong','queren',\
-                      'douji','douji2','douji3','douji4','doujilianxi',\
+                      'douji','douji2','douji3','douji4','douji5',\
+                      'doujilianxi',\
                       'doujiqueren','doujiend','ying','jixu',\
                       'zhunbei','zhunbei2',\
                       'doujiquxiao']:
