@@ -74,7 +74,7 @@ class Worker(QObject):
                     #self.message_output('重复次数：',refresh)
                     self.message_output(i)
                     t = random.randint(200,300) / 100
-                    if refresh>6 or cishu>self.cishu_max:
+                    if cishu>self.cishu_max:
                         self.message_output('进攻次数上限')
                         return
                     for index in range(len(pts)):
