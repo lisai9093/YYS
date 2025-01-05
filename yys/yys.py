@@ -334,6 +334,7 @@ class Worker(QObject):
         last_click=''
         cishu=0
         refresh=0
+        right = (754, 420)
         
         boss_done=False
         while self.isRunning:   #直到取消，或者出错
@@ -374,8 +375,8 @@ class Worker(QObject):
             target = screen
             pts = action.locate(target,want,0)
             if not len(pts) == 0:
-                self.message_output('正在地图中')
-                for i in ['boss', 'jian']:
+                #self.message_output('正在地图中')
+                for i in ['weishi','boss', 'jian']:
                     want = self.imgs[i]
                     size = want[0].shape
                     h, w , ___ = size
@@ -392,8 +393,12 @@ class Worker(QObject):
                         last_click=i
                         #self.message_output('重复次数：',refresh)
                         if refresh>6:
-                            self.message_output('进攻次数上限')
+                            self.message_output('重复次数上限：'+i)
                             return
+                        if i=='weishi':
+                            left = (100, 420)
+                            pts[0]=left
+                            self.message_output('关闭喂食')
                         xy = action.cheat(pts[0], w, h)
                         action.touch(xy,self.thread_id)
                         time.sleep(0.5)
@@ -402,7 +407,6 @@ class Worker(QObject):
                 if len(pts)==0:
                     if not boss_done:
                         self.message_output('向右走')
-                        right = (854, 420)
                         xy = action.cheat(right, 10, 10)
                         action.touch(xy,self.thread_id)
                         t = random.randint(100,300) / 100
@@ -431,7 +435,7 @@ class Worker(QObject):
 
             for i in ['jujue','queding','ying','querenyuhun',\
                       'jiangli','jixu',\
-                      'tiaozhan','ditu']:
+                      'tiaozhan','ditu','weishi']:
                 want = self.imgs[i]
                 size = want[0].shape
                 h, w , ___ = size
@@ -451,7 +455,6 @@ class Worker(QObject):
                     if refresh>6 or cishu>self.cishu_max:
                         self.message_output('进攻次数上限')
                         return
-
                     self.message_output(i)
                     xy = action.cheat(pts[0], w, h )
                     action.touch(xy,self.thread_id)
@@ -486,13 +489,13 @@ class Worker(QObject):
             want = self.imgs['guding']
             pts = action.locate(screen,want,0)
             if not len(pts) == 0:
-                self.message_output('正在地图中')
-                
+                #self.message_output('正在地图中')
                 want = self.imgs['xiao']
                 pts = action.locate(screen,want,0)
                 
                 if not len(pts) == 0:
-                    self.message_output('组队状态中')
+                    pass
+                    #self.message_output('组队状态中')
                 else:
                     self.message_output('退出重新组队')
                     
@@ -565,6 +568,7 @@ class Worker(QObject):
         last_click=''
         cishu=0
         refresh=0
+        right = (754, 420)
         
         boss_done=False
         while self.isRunning:   #直到取消，或者出错
@@ -606,7 +610,7 @@ class Worker(QObject):
 
             pts = action.locate(screen,want,0)
             if not len(pts) == 0:
-                self.message_output('正在地图中')
+                #self.message_output('正在地图中')
                 for i in ['boss', 'jian']:
                     want = self.imgs[i]
                     size = want[0].shape
@@ -636,7 +640,6 @@ class Worker(QObject):
                 if len(pts)==0:
                     if not boss_done:
                         self.message_output('向右走')
-                        right = (854, 420)
                         xy = action.cheat(right, 10, 10)
                         action.touch(xy,self.thread_id)
                         t = random.randint(100,300) / 100
