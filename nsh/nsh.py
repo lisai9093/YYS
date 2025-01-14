@@ -13,7 +13,8 @@ class Worker(QObject):
         #设置默认功能和次数
         self.func=[{'description':'0 屏幕截图并保存','func_name':0,'count_default':'inf'},\
         {'description':'1 组队司机','func_name':self.huodong,'count_default':'inf'},\
-        {'description':'2 组队打手','func_name':self.huodong2,'count_default':'inf'}]
+        {'description':'2 组队打手','func_name':self.huodong2,'count_default':'inf'},
+        {'description':'3 刷视频','func_name':self.shua,'count_default':'inf'}]
         #功能序号
         self.index=index
         self.cishu_max=cishu_max
@@ -110,10 +111,24 @@ class Worker(QObject):
                     #self.message_output('重复次数：',refresh)
                     self.message_output(i)
                     t = random.randint(50,100) / 100
-                    if refresh>6 or cishu>self.cishu_max:
+                    if cishu>self.cishu_max:
                         self.message_output('进攻次数上限')
                         return
                     for index in range(len(pts)):
                         xy = action.cheat(pts[index], w, h-10 )
                         action.touch(xy,self.thread_id)
                         if self.sleep_fast(t): return
+
+    #刷视频
+    def shua(self):
+        last_click=''
+        cishu=0
+        refresh=0
+        t=3
+        w=640
+        h=1136
+
+        while self.isRunning:
+            xy = random.randint(1, w),random.randint(101, h)
+            action.swipe(xy,self.thread_id)
+            if self.sleep_fast(t): return

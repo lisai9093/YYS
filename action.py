@@ -318,3 +318,18 @@ def touch(pos,thread_id):
 
 
 
+def swipe(pos,thread_id):
+    x, y = pos
+    x1=x
+    if y>100:
+        y1=y-100
+    else:
+        y1=1
+    
+    if adb_enable[thread_id]:
+        comm=[adb_path,"-s",devices_tab[thread_id],"shell","input","touchscreen","swipe",str(x),str(y),str(x1),str(y1)]
+        print(comm)
+        #textBrowser.append('Command: ',comm)
+        subprocess.run(comm,shell=False)
+    else:
+        pyautogui.click(pos)
