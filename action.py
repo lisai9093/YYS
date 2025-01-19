@@ -329,7 +329,7 @@ def swipe(pos,thread_id):
     
     if adb_enable[thread_id]:
         comm=[adb_path,"-s",devices_tab[thread_id],"shell","input","touchscreen","swipe",str(x),str(y),str(x1),str(y1)]
-        print(comm)
+        #print(comm)
         #textBrowser.append('Command: ',comm)
         subprocess.run(comm,shell=False)
     else:
