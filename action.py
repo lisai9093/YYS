@@ -320,9 +320,10 @@ def touch(pos,thread_id):
 
 def swipe(pos,thread_id):
     x, y = pos
+    dy=800
     x1=x
-    if y>100:
-        y1=y-100
+    if y>dy:
+        y1=y-dy
     else:
         y1=1
     

@@ -124,11 +124,11 @@ class Worker(QObject):
         last_click=''
         cishu=0
         refresh=0
-        t=3
+        t=10
         w=640
         h=1136
 
         while self.isRunning:
-            xy = random.randint(1, w),random.randint(101, h)
+            xy = random.randint(1, w-100),random.randint(801, h-100)
             action.swipe(xy,self.thread_id)
             if self.sleep_fast(t): return
