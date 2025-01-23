@@ -72,15 +72,17 @@ def startup(window):
             out=''
         textBrowser.append(out)
         out=out.splitlines()
+    #识别有效ADB设备
     if len(out)>2:
-        textBrowser.append('监测到ADB设备，默认使用安卓截图')
-        adb_enable[thread_id]=True
         #check number of devices
         devices=[]
         for device in out:
             device=device.split()
-            if len(device)==2:
+            if len(device)==2 and not 'offline' in device[1]:
                 devices.append(device[0])
+    #存在ADB设备
+    if len(devices)>0:
+        #如果存在多个ADB设备，选择其中一个
         if len(devices)==1:
             device=devices[0]
         else:
@@ -93,15 +95,23 @@ def startup(window):
                 msg_box.addButton(button, QMessageBox.ButtonRole.ActionRole)
             result = msg_box.exec()
             device=devices[result-2]
-
-        textBrowser.append('使用设备：'+device)
+        textBrowser.append('监测到ADB设备，默认使用安卓截图')
         devices_tab[thread_id]=device
-        window.tabWidget.setTabText(thread_id, '设备'+str(thread_id+1)+'：'+device)
-        pushButton_restart.setText('断开ADB')
+        adb_enable[thread_id]=True
         #change resolution
         screen=screenshot(thread_id)
-        w=screen.shape[0]
-        h=screen.shape[1]
+        if screen is not -1:
+            w=screen.shape[0]
+            h=screen.shape[1]
+            textBrowser.append('使用设备：'+device)
+            window.tabWidget.setTabText(thread_id, '设备'+str(thread_id+1)+'：'+device)
+            pushButton_restart.setText('断开ADB')
+        else:
+            #截屏失败
+            textBrowser.append('截屏失败，断开ADB')
+            devices_tab[thread_id]=None
+            adb_enable[thread_id]=False
+            return
         textBrowser.append('原始分辨率：'+str(w)+'x'+str(h))
         if (w==640 and h==1136) or (h==640 and w==1136):
             textBrowser.append('无需修改分辨率')
@@ -157,6 +167,8 @@ def reset_resolution(window):
 def screenshot(thread_id):
     #ADB截屏
     if adb_enable[thread_id]:
+        if not devices_tab[thread_id]:
+            return -1
         comm=[adb_path,"-s",devices_tab[thread_id],"shell","screencap","-p"]
         #隐藏终端窗口
         if sys.platform=='win32':
@@ -181,7 +193,12 @@ def screenshot(thread_id):
             screen=None
         if screen is None:
             image_bytes = image_bytes.replace(b'\r\n', b'\n')
-            screen = cv2.imdecode(numpy.frombuffer(image_bytes, numpy.uint8),cv2.IMREAD_COLOR)
+            image_array=numpy.frombuffer(image_bytes, numpy.uint8)
+            if image_array.size is 0:
+                #截图失败
+                return -1
+            else:
+                screen = cv2.imdecode(image_array,cv2.IMREAD_COLOR)
     else:
         #桌面版截屏
         with mss.mss() as sct:
