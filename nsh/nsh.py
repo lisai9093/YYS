@@ -14,7 +14,7 @@ class Worker(QObject):
         self.func=[{'description':'0 屏幕截图并保存','func_name':0,'count_default':'inf'},\
         {'description':'1 组队司机','func_name':self.huodong,'count_default':'inf'},\
         {'description':'2 组队打手','func_name':self.huodong2,'count_default':'inf'},
-        {'description':'3 刷视频','func_name':self.shua,'count_default':'inf'}]
+        {'description':'3 刷视频','func_name':self.shua,'count_default':1500}]
         #功能序号
         self.index=index
         self.cishu_max=cishu_max
@@ -131,4 +131,9 @@ class Worker(QObject):
         while self.isRunning:
             xy = random.randint(1, w-100),random.randint(801, h-100)
             action.swipe(xy,self.thread_id)
+            cishu=cishu+1
+            self.message_output('运行次数：'+str(cishu))
             if self.sleep_fast(t): return
+            if cishu>self.cishu_max:
+                self.message_output('进攻次数上限')
+                return
