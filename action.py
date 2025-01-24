@@ -56,7 +56,8 @@ def startup(window):
                 textBrowser.append(out)
         else:
             #无模拟器
-            adb_path=''
+            textBrowser.append('未找到ADB安装路径，尝试使用PATH启动ADB')
+            adb_path='adb'
             out=''
     else:
         adb_path='adb'
