@@ -237,9 +237,16 @@ class MainWindow(QMainWindow):
 ####################################################
 if __name__ == '__main__':
     #初始化设置
+    config_path='config.ini'
+    if os.path.exists(config_path):
+        print("config.ini")
+    else:
+        print("未找到config.ini")
+        print(os.getcwd())
+        exit(1)
     config = configparser.ConfigParser(inline_comment_prefixes=';')
     config.sections()
-    config.read('config.ini')
+    config.read(config_path)
     #inputs from terminal
     parser = argparse.ArgumentParser(description='Input parameters')
     parser.add_argument('-game', '--game', help='游戏名称')
@@ -254,6 +261,7 @@ if __name__ == '__main__':
     if args.game:
         game_name=args.game
     print('加载游戏脚本文件: '+game_name)
+    #add directory into module search list
     sys.path.insert(0, game_name)
     game = importlib.import_module(game_name)
     #总设备数量

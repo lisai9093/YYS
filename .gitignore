@@ -4,3 +4,7 @@
 __pycache__
 .venv
 screenshot.png
+dist*
+setup.py
+test.py
+build*

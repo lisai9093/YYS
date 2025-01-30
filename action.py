@@ -74,9 +74,9 @@ def startup(window):
         textBrowser.append(out)
         out=out.splitlines()
     #识别有效ADB设备
+    devices=[]
     if len(out)>2:
         #check number of devices
-        devices=[]
         for device in out:
             device=device.split()
             if len(device)==2 and not 'offline' in device[1]:
@@ -101,7 +101,7 @@ def startup(window):
         adb_enable[thread_id]=True
         #change resolution
         screen=screenshot(thread_id)
-        if screen is not -1:
+        if not (isinstance(screen, int) and screen == -1):
             w=screen.shape[0]
             h=screen.shape[1]
             textBrowser.append('使用设备：'+device)
@@ -188,14 +188,14 @@ def screenshot(thread_id):
         image_bytes=image_bytes.stdout
         image_array=numpy.frombuffer(image_bytes, numpy.uint8)
         #sometime numpy returns empty
-        if image_array.size is not 0:
+        if image_array.size != 0:
             screen=cv2.imdecode(image_array,cv2.IMREAD_COLOR)
         else:
             screen=None
         if screen is None:
             image_bytes = image_bytes.replace(b'\r\n', b'\n')
             image_array=numpy.frombuffer(image_bytes, numpy.uint8)
-            if image_array.size is 0:
+            if image_array.size == 0:
                 #截图失败
                 return -1
             else:
