@@ -880,18 +880,15 @@ class Worker(QObject):
                 target = screen
                 pts = action.locate(target,want,0)
                 if not len(pts) == 0:
-                    if i=='hdjiacheng':
-                        refresh=0
-                    elif last_click==i:
+                    if 'hdtiaozhan' in i:
+                        i='hdtiaozhan'
+                    if last_click==i:
                         refresh=refresh+1
                     else:
                         refresh=0
                     last_click=i
                     #self.message_output('重复次数：',refresh)
                     self.message_output(i)
-                    if refresh>6:
-                        self.message_output('进攻次数上限')
-                        return
 
                     t = 1
                     if 'hdtiaozhan' in i:
@@ -899,6 +896,9 @@ class Worker(QObject):
                             cishu=cishu+1
                             self.message_output('挑战次数：'+str(cishu)+'/'+str(self.cishu_max))
                         t=5
+                    if refresh>6 or cishu>self.cishu_max:
+                        self.message_output('进攻次数上限')
+                        return
                     if i=='hdsousuo':
                         t=5
                     if i=='hdend' and False:
