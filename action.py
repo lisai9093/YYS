@@ -46,7 +46,7 @@ def startup(window):
             textBrowser.append('检测到MuMu模拟器')
             adb_path=mumu_path
             #获取端口信息
-            port, ok = QInputDialog.getInt(window, '模拟器端口', '输入MuMu模拟器端口（默认7555）：',7555,0,65535,1)
+            port, ok = QInputDialog.getInt(window, '模拟器端口', '输入MuMu模拟器端口（默认16384）：',16384,0,65535,1)
             if ok:
                 textBrowser.append('模拟器端口：'+str(port))
                 mumu_ip='127.0.0.1:'+str(port)
