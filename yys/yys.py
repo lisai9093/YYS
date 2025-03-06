@@ -298,7 +298,7 @@ class Worker(QObject):
                 self.message_output('体力不足')
                 return
 
-            for i in ['jujue','querenyuhun','ying','jiangli','jiangli2','jixu','zhunbei',\
+            for i in ['jujue','querenyuhun','ying','jiangli','jiangli2','jixu','zhunbei','guanbi',\
                       'tiaozhan','tiaozhan2','tiaozhan3','queding','tancha','shibai']:
                 want=self.imgs[i]
                 size = want[0].shape
