@@ -88,12 +88,6 @@ class Worker(QObject):
                 if not len(pts) == 0:
                     liaotu=False
                     self.message_output('个人突破')
-                    self.cishu_max=30
-
-            if liaotu==False:
-                if cishu >= 31:
-                    self.message_output('进攻次数上限: '+str(cishu)+'/'+str(self.cishu_max))
-                    return
 
             #奖励
             for i in ['jujue','queding',\
@@ -121,10 +115,9 @@ class Worker(QObject):
                         refresh=0
                     last_click=i
                     if refresh>6:
-                        self.message_output('进攻次数上限')
+                        self.message_output('重复次数上限')
                         return
-                    xy = action.cheat(pts[0], w, h-10 )
-                    action.touch(xy,self.thread_id)
+                    
                     t = random.randint(50,100) / 100
                     if i == 'shibai':
                         if cishu>0:
@@ -137,6 +130,11 @@ class Worker(QObject):
                         self.message_output('进攻总次数：'+str(cishu)+'/'+str(self.cishu_max))
                         t = random.randint(500,800) / 100
                     self.message_output(i)
+                    if cishu > self.cishu_max:
+                        self.message_output('进攻次数上限: '+str(cishu)+'/'+str(self.cishu_max))
+                        return
+                    xy = action.cheat(pts[0], w, h-10 )
+                    action.touch(xy,self.thread_id)
                     if self.sleep_fast(t): return
                     break
 
