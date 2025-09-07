@@ -338,7 +338,7 @@ def touch(pos,thread_id):
 
 def swipe(pos,thread_id):
     x, y = pos
-    dy=800
+    dy=500
     x1=x
     if y>dy:
         y1=y-dy
@@ -351,4 +351,12 @@ def swipe(pos,thread_id):
         #textBrowser.append('Command: ',comm)
         subprocess.run(comm,shell=False)
     else:
-        pyautogui.click(pos)
+        # Move to the starting point and press the left mouse button
+        pyautogui.moveTo(pos)
+        pyautogui.mouseDown(button='left')
+
+        # Drag the mouse to the ending point over 1 second
+        pyautogui.dragTo(x, y1, duration=1)
+
+        # Release the left mouse button
+        pyautogui.mouseUp(button='left')

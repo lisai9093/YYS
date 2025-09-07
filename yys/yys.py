@@ -89,6 +89,20 @@ class Worker(QObject):
                     liaotu=False
                     self.message_output('个人突破')
 
+            #避免寮突失败次数太多
+            if liaotu:
+                want = self.imgs['tuposhibai']
+                size = want[0].shape
+                h, w , ___ = size
+                pts = action.locate(screen,want,0)
+                if len(pts) >= 6:
+                    liaotu=True
+                    self.message_output('寮突破失败次数：'+str(len(pts)))
+                    self.message_output('向下滑')
+                    action.swipe(pts[len(pts)-1],self.thread_id)
+                    self.sleep_fast(2)
+                    continue
+            
             #奖励
             for i in ['jujue','queding',\
                       'shibai','ying','jiangli','jixu',\
