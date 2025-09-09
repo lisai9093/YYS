@@ -96,16 +96,15 @@ class Worker(QObject):
                 h, w , ___ = size
                 pts = action.locate(screen,want,0)
                 if len(pts) >= 6:
-                    liaotu=True
                     self.message_output('寮突破失败次数：'+str(len(pts)))
-                    self.message_output('向下滑')
+                    self.message_output('向上滑')
                     action.swipe(pts[len(pts)-1],self.thread_id)
                     self.sleep_fast(2)
                     continue
             
             #奖励
             for i in ['jujue','queding',\
-                      'shibai','ying','jiangli','jixu',\
+                      'tuposhangxian','shibai','ying','jiangli','jixu',\
                       'jingong','jingong2','jingong3',\
                       'lingxunzhang','lingxunzhang2','lingxunzhang4',\
                       'shuaxin','zhunbei']:
@@ -115,16 +114,14 @@ class Worker(QObject):
                 target=screen
                 pts=action.locate(target,want,0)
                 if not len(pts)==0:
-                    if last_click==i:
-                        if ('jingong' in i or 'lingxunzhang' in i) and liaotu:
-                            refresh=refresh+1
+                    #无次数，等待5分钟
+                    if i == 'tuposhangxian':
                             self.message_output('进攻CD，暂停5分钟')
                             t=60*5
                             if self.sleep_fast(t): return
-                            last_click=''
-                            continue
-                        else:
-                            refresh=refresh+1
+                            break
+                    if last_click==i:
+                        refresh=refresh+1
                     else:
                         refresh=0
                     last_click=i
