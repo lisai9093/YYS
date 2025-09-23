@@ -95,7 +95,7 @@ class Worker(QObject):
                 size = want[0].shape
                 h, w , ___ = size
                 pts = action.locate(screen,want,0)
-                if len(pts) >= 6:
+                if len(pts) >= 4:
                     self.message_output('寮突破失败次数：'+str(len(pts)))
                     self.message_output('向上滑')
                     action.swipe(pts[len(pts)-1],self.thread_id)
