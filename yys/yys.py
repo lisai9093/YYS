@@ -173,7 +173,7 @@ class Worker(QObject):
 
             #自动点击通关结束后的页面
             for i in ['jujue','tiaozhan','tiaozhan2',\
-                      'moren','queding','querenyuhun','ying',\
+                      'moren','queding','queding2','querenyuhun','ying',\
                       'jiangli','jiangli2',\
                       'jixu','shibai']:
                 want = self.imgs[i]
