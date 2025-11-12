@@ -910,11 +910,12 @@ class Worker(QObject):
                         return
                     if i=='hdsousuo':
                         t=5
-                    if i=='hdend' and False:
+                    if i=='hdend':
                         if refresh==0:
                             self.message_output('疲劳度满，休息10分钟')
                             t = 10*60
                             if self.sleep_fast(t): return
+                            break
                     xy = action.cheat(pts[0], w, h)
                     action.touch(xy,self.thread_id)
                     #self.message_output('等待时间：',t)
