@@ -98,7 +98,7 @@ class Worker(QObject):
                 if len(pts) >= 4:
                     self.message_output('寮突破失败次数：'+str(len(pts)))
                     self.message_output('向上滑')
-                    action.swipe(pts[len(pts)-1],self.thread_id)
+                    action.swipe(pts[len(pts)-1],self.thread_id,400)
                     self.sleep_fast(2)
                     continue
             

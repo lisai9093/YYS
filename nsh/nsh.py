@@ -130,7 +130,7 @@ class Worker(QObject):
 
         while self.isRunning:
             xy = random.randint(1, w-100),random.randint(801, h-100)
-            action.swipe(xy,self.thread_id)
+            action.swipe(xy,self.thread_id,800)
             cishu=cishu+1
             self.message_output('运行次数：'+str(cishu))
             if self.sleep_fast(t): return

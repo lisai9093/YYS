@@ -336,9 +336,8 @@ def touch(pos,thread_id):
 
 
 
-def swipe(pos,thread_id):
+def swipe(pos,thread_id,dy):
     x, y = pos
-    dy=500
     x1=x
     if y>dy:
         y1=y-dy
