@@ -385,14 +385,14 @@ class Worker(QObject):
             pts = action.locate(target,want,0)
             if not len(pts) == 0:
                 #self.message_output('正在地图中')
-                for i in ['weishi','boss', 'jian']:
+                for i in ['weishi','boss', 'jian','jian2','boss2']:
                     want = self.imgs[i]
                     size = want[0].shape
                     h, w , ___ = size
                     target = screen
                     pts = action.locate(target,want,0)
                     if not len(pts) == 0:
-                        if i=='boss':
+                        if 'boss' in i:
                             boss_done=True
                             i='jian'
                         if last_click==i:
@@ -620,14 +620,14 @@ class Worker(QObject):
             pts = action.locate(screen,want,0)
             if not len(pts) == 0:
                 #self.message_output('正在地图中')
-                for i in ['boss', 'jian']:
+                for i in ['boss', 'jian','jian2','boss2']:
                     want = self.imgs[i]
                     size = want[0].shape
                     h, w , ___ = size
                     target = screen
                     pts = action.locate(target,want,0)
                     if not len(pts) == 0:
-                        if i=='boss':
+                        if 'boss' in i:
                             boss_done=True
                             i='jian'
                         if last_click==i:
