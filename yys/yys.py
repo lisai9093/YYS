@@ -850,12 +850,11 @@ class Worker(QObject):
                     else:
                         self.message_output(i)
                         t = random.randint(50,100) / 100
-                    if refresh>6 or cishu>self.cishu_max:
+                    if refresh>60 or cishu>self.cishu_max:
                         self.message_output('进攻次数上限')
                         return
                     xy = action.cheat(pts[0], w, h-10 )
                     action.touch(xy,self.thread_id)
-                    t = random.randint(50,100) / 100
                     if self.sleep_fast(t): return
                     break
 
