@@ -469,6 +469,8 @@ class Worker(QObject):
                     action.touch(xy,self.thread_id)
                     if i=='queding':
                         t = random.randint(150,200) / 100
+                    elif 'tiaozhan' in i:
+                        t = random.randint(150,300) / 100
                     else:
                         t = random.randint(15,30) / 100
                     if self.sleep_fast(t): return
