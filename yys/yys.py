@@ -818,7 +818,7 @@ class Worker(QObject):
                       'doujilianxi',\
                       'doujiqueren','doujiend','ying','jixu',\
                       'zhunbei','zhunbei2',\
-                      'doujiquxiao']:
+                      'doujiquxiao','guanbi']:
                 want = self.imgs[i]
                 size = want[0].shape
                 h, w , ___ = size
