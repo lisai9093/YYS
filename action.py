@@ -37,24 +37,26 @@ def startup(window):
     #检测ADB
     if sys.platform=='win32':
         textBrowser.append('检测模拟器')
-        mumu_path="C:\\Program Files\\Netease\\MuMuPlayer-12.0\\shell\\adb.exe"
-        ld_path="C:\\leidian\\LDPlayer9\\adb.exe"
-        if os.path.isfile(ld_path):
-            textBrowser.append('检测到雷电模拟器')
-            adb_path=ld_path
-        elif os.path.isfile(mumu_path):
-            textBrowser.append('检测到MuMu模拟器')
-            adb_path=mumu_path
-            #获取端口信息
-            port, ok = QInputDialog.getInt(window, '模拟器端口', '输入MuMu模拟器端口（默认16384）：',16384,0,65535,1)
-            if ok:
-                textBrowser.append('模拟器端口：'+str(port))
-                mumu_ip='127.0.0.1:'+str(port)
-                comm=[adb_path,'connect',mumu_ip]
-                out=subprocess.run(comm,shell=False,capture_output=True,check=False)
-                out=out.stdout.decode('utf-8')
-                textBrowser.append(out)
-        else:
+        path_list = ["C:\\Program Files\\Netease\\MuMuPlayer-12.0\\shell\\adb.exe", "C:\\Program Files\\Netease\\MuMu\\nx_main\\adb.exe", "C:\\leidian\\LDPlayer9\\adb.exe"]
+        for id_path in path_list:
+            #textBrowser.append('搜索'+id_path)
+            if os.path.isfile(id_path):
+                adb_path=id_path
+                if 'MuMu' in id_path:
+                    textBrowser.append('检测到MuMu模拟器')
+                    #获取端口信息
+                    port, ok = QInputDialog.getInt(window, '模拟器端口', '输入MuMu模拟器端口（默认16384）：',16384,0,65535,1)
+                    if ok:
+                        textBrowser.append('模拟器端口：'+str(port))
+                        mumu_ip='127.0.0.1:'+str(port)
+                        comm=[adb_path,'connect',mumu_ip]
+                        out=subprocess.run(comm,shell=False,capture_output=True,check=False)
+                        out=out.stdout.decode('utf-8')
+                        textBrowser.append(out)
+                elif 'LD' in id_path:
+                    textBrowser.append('检测到雷电模拟器')
+        
+        if adb_path==None:
             #无模拟器
             textBrowser.append('未找到ADB安装路径，尝试使用PATH启动ADB')
             adb_path='adb'
@@ -66,7 +68,8 @@ def startup(window):
         comm=[adb_path,'devices']
         #textBrowser.append(comm)
         try:
-            out=subprocess.run(comm,capture_output=True,timeout=1)
+            #out=subprocess.run(comm,capture_output=True,timeout=1)
+            out=subprocess.run(comm,shell=False,capture_output=True,check=False)
             out=out.stdout.decode('utf-8')
         except:
             textBrowser.append('ADB error')
