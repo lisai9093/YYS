@@ -510,7 +510,7 @@ class Worker(QObject):
                 else:
                     self.message_output('退出重新组队')
                     
-                    for i in ['queren', 'queren2','tuichu']:
+                    for i in ['queren', 'queren2','tuichu','tuichu2']:
                         want = self.imgs[i]
                         size = want[0].shape
                         h, w , ___ = size
