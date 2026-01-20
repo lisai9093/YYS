@@ -376,7 +376,6 @@ class Worker(QObject):
                 t = random.randint(15,30) / 100
                 if self.sleep_fast(t): return
 
-            
             #设定目标，开始查找
             #进入后
             want=self.imgs['guding']
@@ -385,6 +384,43 @@ class Worker(QObject):
             pts = action.locate(target,want,0)
             if not len(pts) == 0:
                 #self.message_output('正在地图中')
+                want = self.imgs['xiao']
+                pts = action.locate(screen,want,0)
+                
+                if not len(pts) == 0:
+                    pass
+                    #self.message_output('组队状态中')
+                else:
+                    self.message_output('退出重新组队')
+                    boss_done=True
+                    for i in ['queren', 'queren2','tuichu','tuichu2']:
+                        want = self.imgs[i]
+                        size = want[0].shape
+                        h, w , ___ = size
+                        pts = action.locate(screen,want,0)
+                        
+                        if not len(pts) == 0:
+                            if last_click==i:
+                                refresh=refresh+1
+                            else:
+                                refresh=0
+                            last_click=i
+                            #self.message_output('重复次数：',refresh)
+                            if refresh>6:
+                                self.message_output('进攻次数上限')
+                                return
+                            
+                            self.message_output('退出中'+i)
+                            try:
+                                queding = pts[1]
+                            except:
+                                queding = pts[0]
+                            xy = action.cheat(queding, w, h)
+                            action.touch(xy,self.thread_id)
+                            t = random.randint(50,80) / 100
+                            if self.sleep_fast(t): return
+                            break
+
                 for i in ['weishi','boss', 'jian','jian2','boss2']:
                     want = self.imgs[i]
                     size = want[0].shape
@@ -420,27 +456,6 @@ class Worker(QObject):
                         action.touch(xy,self.thread_id)
                         t = random.randint(100,300) / 100
                         if self.sleep_fast(t): return
-                        continue
-                    else:
-                        i='tuichu'
-                        want = self.imgs[i]
-                        size = want[0].shape
-                        h, w , ___ = size
-                        #x1,x2 = upleft, (965, 522)
-                        #target = action.cut(screen, x1, x2)
-                        target = screen
-                        pts = action.locate(target,want,0)
-                        if not len(pts) == 0:
-                            self.message_output('退出中'+i)
-                            try:
-                                queding = pts[1]
-                            except:
-                                queding = pts[0]
-                            xy = action.cheat(queding, w, h)
-                            action.touch(xy,self.thread_id)
-                            t = random.randint(50,80) / 100
-                            if self.sleep_fast(t): return
-                    continue
 
             for i in ['jujue','queding','ying','querenyuhun',\
                       'jiangli','jixu',\
