@@ -10,7 +10,6 @@ from PyQt6.QtWidgets import (
     QMessageBox,
     QMainWindow,
     QTabWidget,
-    QVBoxLayout,
     QDialog,
 )
 from PyQt6.QtCore import QThread,pyqtSignal,QProcess,QMutex,Qt
@@ -45,7 +44,7 @@ class MainWindow(QMainWindow):
         self.tab=[None]*self.nthread
         self.tabWidget = QTabWidget()
         self.threads=[None]*self.nthread
-        self.workers=[game.Worker()]*self.nthread
+        self.workers = [game.Worker() for _ in range(self.nthread)]
         self.t_start=[None]*self.nthread
         self.isRunning=[False]*self.nthread
         # Create tabs and load the same UI file into each
