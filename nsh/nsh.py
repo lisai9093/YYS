@@ -5,6 +5,7 @@ import action
 class Worker(QObject):
     finished = pyqtSignal(int)
     progress = pyqtSignal(str,int)
+    start_task = pyqtSignal(int, float)  # Signal to start task with parameters (index, cishu_max)
     
     def __init__(self,thread_id=None,index=None,cishu_max=None):
         super().__init__()
@@ -22,11 +23,25 @@ class Worker(QObject):
         #读取文件
         self.imgs = action.load_imgs(self.game_name)
 
-    def run(self):
-        #self.progress.emit('Thread is '+str(self.thread_id),self.thread_id)
-        #self.progress.emit('Call function index '+str(self.index)+' with max count of '+str(self.cishu_max),self.thread_id)
-        command=self.func[self.index]['func_name']
-        command()
+    def execute_task(self, index, cishu_max):
+        """Slot that receives the start signal with parameters"""
+        self.run(index, cishu_max)
+
+    def run(self, index=None, cishu_max=None):
+        """Execute the selected task with given parameters"""
+        if index is not None:
+            self.index = index
+        if cishu_max is not None:
+            self.cishu_max = cishu_max
+        
+        if self.index is not None and self.index in range(len(self.func)):
+            command = self.func[self.index]['func_name']
+            # Handle special case for screenshot (func_name is 0)
+            if isinstance(command, int):
+                # Function 0: screen_show is handled by main.py on main thread
+                pass
+            else:
+                command()
         self.finished.emit(self.thread_id)
     
     def message_output(self,msg):

@@ -5,11 +5,13 @@ import action
 class Worker(QObject):
     finished = pyqtSignal(int)
     progress = pyqtSignal(str,int)
+    start_task = pyqtSignal(int, int)  # Signal to start task with parameters
     
-    def __init__(self,thread_id=None,index=None,cishu_max=None):
+    def __init__(self,thread_id=None,index=None,cishu_max=None,load_images=True):
         super().__init__()
         self.game_name='yys'
         self.thread_id = thread_id
+        # DO NOT connect signal here - will be connected after moveToThread()
         #设置默认功能和次数
         self.func=[{'description':'0 屏幕截图并保存','func_name':0,'count_default':'inf'},\
         {'description':'1 结界突破','func_name':self.tupo,'count_default':'inf'},\
@@ -33,11 +35,20 @@ class Worker(QObject):
         #读取文件
         self.imgs = action.load_imgs(self.game_name)
 
-    def run(self):
+    def execute_task(self, index, cishu_max):
+        """Slot that receives the start signal with parameters"""
+        self.run(index, cishu_max)
+    
+    def run(self,index=None,cishu_max=None):
         #self.progress.emit('Thread is '+str(self.thread_id),self.thread_id)
         #self.progress.emit('Call function index '+str(self.index)+' with max count of '+str(self.cishu_max),self.thread_id)
-        command=self.func[self.index]['func_name']
-        command()
+        self.index=index
+        self.cishu_max=cishu_max
+        self.isRunning=True
+        if self.index in range(len(self.func)):
+            command=self.func[self.index]['func_name']
+            command()
+        self.isRunning=False
         self.finished.emit(self.thread_id)
     
     def message_output(self,msg):
@@ -326,7 +337,7 @@ class Worker(QObject):
                         if refresh==0:
                             cishu=cishu+1
                         self.message_output('挑战次数：'+str(cishu)+'/'+str(self.cishu_max))
-                        t = random.randint(500,800) / 100
+                        t = random.randint(100,200) / 100
                     else:
                         t = random.randint(15,30) / 100
                     if refresh>6 or cishu>self.cishu_max:

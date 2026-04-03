@@ -47,7 +47,7 @@ def startup(window):
                     #获取端口信息
                     port, ok = QInputDialog.getInt(window, '模拟器端口', '输入MuMu模拟器端口（默认16384）：',16384,0,65535,1)
                     if ok:
-                        textBrowser.append('模拟器端口：'+str(port))
+                        textBrowser.append(f'模拟器端口：{port}')
                         mumu_ip='127.0.0.1:'+str(port)
                         comm=[adb_path,'connect',mumu_ip]
                         out=subprocess.run(comm,shell=False,capture_output=True,check=False)
@@ -107,8 +107,8 @@ def startup(window):
         if not (isinstance(screen, int) and screen == -1):
             w=screen.shape[0]
             h=screen.shape[1]
-            textBrowser.append('使用设备：'+device)
-            window.tabWidget.setTabText(thread_id, '设备'+str(thread_id+1)+'：'+device)
+            textBrowser.append(f'使用设备：{device}')
+            window.tabWidget.setTabText(thread_id, f'设备{thread_id+1}：{device}')
             pushButton_restart.setText('断开ADB')
         else:
             #截屏失败
@@ -116,7 +116,7 @@ def startup(window):
             devices_tab[thread_id]=None
             adb_enable[thread_id]=False
             return
-        textBrowser.append('原始分辨率：'+str(w)+'x'+str(h))
+        textBrowser.append(f'原始分辨率：{w}x{h}')
         if (w==640 and h==1136) or (h==640 and w==1136):
             textBrowser.append('无需修改分辨率')
         else:
@@ -153,6 +153,7 @@ def startup(window):
     monitor = {"top": b, "left": a, "width": c, "height": d}
 
 def reset_resolution(window):
+    global adb_enable, devices_tab, adb_path
     thread_id = window.tabWidget.currentIndex()
     textBrowser=window.tab[thread_id].textBrowser
     pushButton_restart=window.tab[thread_id].pushButton_restart
@@ -165,7 +166,7 @@ def reset_resolution(window):
         adb_enable[thread_id]=False
         #日志更新
         textBrowser.append('已断开连接')
-        window.tabWidget.setTabText(thread_id, '设备'+str(thread_id+1)+'：桌面版')
+        window.tabWidget.setTabText(thread_id, f'设备{thread_id+1}：桌面版')
         pushButton_restart.setText('连接ADB')
 
 def screenshot(thread_id):

@@ -43,12 +43,13 @@ class MainWindow(QMainWindow):
         self.nthread=nthread
         self.tab=[None]*self.nthread
         self.tabWidget = QTabWidget()
-        self.threads=[None]*self.nthread
-        self.workers = [game.Worker() for _ in range(self.nthread)]
+        self.workers = [None]*self.nthread  # Lazy init - create on worker thread
+        self.threads = [QThread() for i in range(nthread)]
         self.t_start=[None]*self.nthread
         self.isRunning=[False]*self.nthread
         # Create tabs and load the same UI file into each
         for i in range(self.nthread):
+            #GUI
             self.tab[i]=loadUi('main.ui')
             self.tabWidget.addTab(self.tab[i], f'设备{i+1}：桌面版')
             #self.tab[i].pushButton_start.clicked.connect(lambda thread_id=i: self.start_stop(thread_id))
@@ -58,9 +59,20 @@ class MainWindow(QMainWindow):
             self.tab[i].listWidget.currentItemChanged.connect(partial(self.click_list, thread_id=i))
             #self.tab[i].textBrowser.textChanged.connect(lambda thread_id=i: self.text_changed(thread_id))
             self.tab[i].textBrowser.textChanged.connect(partial(self.text_changed, thread_id=i))
-            #加载脚本默认功能
-            for item in self.workers[i].func:
+            
+            #thread - DON'T initialize workers yet (too slow)
+            self.threads[i].start()  # Start empty thread
+        
+        # Load worker list items asynchronously
+        # For now, create a dummy worker just to get the function list
+        dummy_worker = game.Worker(0)
+        for i in range(self.nthread):
+            for item in dummy_worker.func:
                 self.tab[i].listWidget.addItem(item['description'])
+            
+            # Connect worker signals AFTER thread setup
+            # Workers will be created lazily on first use
+        
         #self.tabWidget.currentChanged.connect(self.tab_changed)
         # Set the tab widget as the central widget
         self.setCentralWidget(self.tabWidget)
@@ -75,6 +87,10 @@ class MainWindow(QMainWindow):
         self.tab[thread_id].textBrowser.append(text)
     #连接/断开按键
     def click_restart(self,thread_id):
+        if self.isRunning[thread_id]:
+            textBrowser=self.tab[thread_id].textBrowser
+            textBrowser.append('脚本运行中，请先停止')
+            return
         mutex.lock()  # Acquire the lock
         if action.devices_tab[thread_id]==None:
             action.startup(self)
@@ -87,8 +103,14 @@ class MainWindow(QMainWindow):
         listWidget=self.tab[thread_id].listWidget
         #current list index
         index=listWidget.currentRow()
+        #Get function list from dummy worker (already created)
+        if self.workers[thread_id] is None:
+            dummy = game.Worker(thread_id)
+            default_count = str(dummy.func[index]['count_default'])
+        else:
+            default_count = str(self.workers[thread_id].func[index]['count_default'])
         #设置默认次数
-        lineEdit.setText(str(self.workers[thread_id].func[index]['count_default']))
+        lineEdit.setText(default_count)
     #自动显示最新日志
     def text_changed(self,thread_id):
         #current tab
@@ -134,8 +156,8 @@ class MainWindow(QMainWindow):
                     textBrowser.append('请输入数字')
                     pushButton_start.setText('开始')
                     return
-                except:
-                    textBrowser.append('数字超出范围（1-9999）')
+                except Exception as e:
+                    textBrowser.append(f'数字超出范围（1-9999）: {e}')
                     pushButton_start.setText('开始')
                     return
             else:
@@ -147,31 +169,30 @@ class MainWindow(QMainWindow):
                 #debug has to be on main thread
                 self.screen_show(thread_id)
             else:
-                #p = Process(target=command)
-                #p.start()
-                mutex.lock()  # Acquire the lock
-                #新建线程
+                #✅ Lazy initialize worker if needed
+                if self.workers[thread_id] is None:
+                    self.workers[thread_id] = game.Worker(thread_id)
+                    self.workers[thread_id].moveToThread(self.threads[thread_id])
+                    # CRITICAL: Connect AFTER moveToThread() with QueuedConnection!
+                    if hasattr(self.workers[thread_id], 'start_task'):
+                        self.workers[thread_id].start_task.connect(self.workers[thread_id].execute_task, Qt.ConnectionType.QueuedConnection)
+                    self.workers[thread_id].finished.connect(partial(self.thread_finished, thread_id=thread_id))
+                    self.workers[thread_id].progress.connect(self.update_text_browser)
+                
+                # ✅ Emit signal to worker thread (queued, non-blocking)
                 self.t_start[thread_id]=time.time()
-                self.threads[thread_id] = QThread()
-                #加载脚本和指定功能
-                self.workers[thread_id]=game.Worker(thread_id)
-                self.workers[thread_id].index=index
-                self.workers[thread_id].cishu_max=cishu_max
-                #初始化线程任务
-                self.workers[thread_id].moveToThread(self.threads[thread_id])
-                self.threads[thread_id].started.connect(self.workers[thread_id].run)
-                self.workers[thread_id].finished.connect(self.threads[thread_id].quit)
-                self.workers[thread_id].finished.connect(self.workers[thread_id].deleteLater)
-                self.threads[thread_id].finished.connect(partial(self.thread_finished, thread_id))
-                self.workers[thread_id].progress.connect(self.update_text_browser)
-                #开始运行线程
-                self.workers[thread_id].isRunning=True
+                if hasattr(self.workers[thread_id], 'start_task'):
+                    self.workers[thread_id].start_task.emit(index, cishu_max)
+                else:
+                    # Fallback for nsh game type
+                    if hasattr(self.workers[thread_id], 'execute_task'):
+                        self.workers[thread_id].execute_task(index, cishu_max)
+                    else:
+                        self.workers[thread_id].run(index, cishu_max)
                 self.isRunning[thread_id]=True
-                self.threads[thread_id].start()
-                mutex.unlock()  # Release the lock
+                self.workers[thread_id].isRunning=True
                 pushButton_start.setText('停止')
                 pushButton_restart.setEnabled(False)
-                #time.sleep(1)
         elif not listWidget.selectedItems():
             #没有选择任何脚本
             textBrowser.append('无效选项')
@@ -183,18 +204,16 @@ class MainWindow(QMainWindow):
         textBrowser=self.tab[thread_id].textBrowser
         pushButton_start=self.tab[thread_id].pushButton_start
         pushButton_restart=self.tab[thread_id].pushButton_restart
-        textBrowser.append('Thread finished')
-        self.threads[thread_id].wait()  # Wait for thread to fully exit
-        self.threads[thread_id].deleteLater()  # Schedule for deletion
-        self.threads[thread_id] = None
+        # Thread stays alive - just update UI (don't quit or delete)
         self.workers[thread_id].isRunning=False
         self.isRunning[thread_id]=False
 
         #计时
         t_end = time.time()
-        hours, rem = divmod(t_end-self.t_start[thread_id], 3600)
-        minutes, seconds = divmod(rem, 60)
-        textBrowser.append('运行时间：{:0>2}:{:0>2}:{:0>2}'.format(int(hours),int(minutes),int(seconds)))
+        if self.t_start[thread_id]:
+            hours, rem = divmod(t_end-self.t_start[thread_id], 3600)
+            minutes, seconds = divmod(rem, 60)
+            textBrowser.append('运行时间：{:0>2}:{:0>2}:{:0>2}'.format(int(hours),int(minutes),int(seconds)))
         textBrowser.append(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         #更新日志/按键
         pushButton_start.setText('开始')
@@ -211,7 +230,10 @@ class MainWindow(QMainWindow):
         textBrowser=self.tab[thread_id].textBrowser
         #截屏
         screen=action.screenshot(thread_id)
-        textBrowser.append('截图分辨率: '+str(screen.shape[1])+'x'+str(screen.shape[0]))
+        if isinstance(screen, int) and screen == -1:
+            textBrowser.append('截图失败')
+            return
+        textBrowser.append(f'截图分辨率: {screen.shape[1]}x{screen.shape[0]}')
         screen = screen[0:screen.shape[0], 0:screen.shape[1]]
         h, w, ch = screen.shape
         bytesPerLine = ch * w
@@ -251,21 +273,39 @@ if __name__ == '__main__':
     parser.add_argument('-game', '--game', help='游戏名称')
     parser.add_argument('-debug', '--debug', type=int, help='Debug模式')
     args = parser.parse_args()
+    
+    # Validate config
+    required_keys = ['Nthread', 'debug', 'game']
+    if 'general' not in config or not all(k in config['general'] for k in required_keys):
+        print("Error: config.ini missing required keys in [general] section")
+        exit(1)
+    
+    try:
+        nthread_val = int(config['general']['Nthread'])
+        if nthread_val < 1 or nthread_val > 10:
+            raise ValueError("Nthread must be between 1 and 10")
+    except ValueError as e:
+        print(f"Error: Invalid Nthread value - {e}")
+        exit(1)
+    
     #debug模式
-    if config['general']['debug'].lower() in ['true', '1', 'yes'] or args.debug['general']['debug'].lower() in ['true', '1', 'yes']:
+    debug_enabled = config['general']['debug'].lower() in ['true', '1', 'yes']
+    if args.debug is not None:
+        debug_enabled = str(args.debug) in ['1']
+    if debug_enabled:
         import faulthandler
         faulthandler.enable()
     #游戏名
     game_name=config['general']['game']
     if args.game:
         game_name=args.game
-    print('加载游戏脚本文件: '+game_name)
+    print(f'加载游戏脚本文件: {game_name}')
     #add directory into module search list
     sys.path.insert(0, game_name)
     game = importlib.import_module(game_name)
     #总设备数量
-    nthread=int(config['general']['Nthread'])
-    print('线程总数量：',nthread)
+    nthread=nthread_val
+    print(f'线程总数量：{nthread}')
     #初始化所有线程
     #action.init_thread_variable(nthread)
     #GUI
@@ -273,7 +313,7 @@ if __name__ == '__main__':
     window = MainWindow(nthread)
     window.show()
     #检测系统
-    print('操作系统: '+sys.platform)
+    print(f'操作系统: {sys.platform}')
     
     #pyautogui.PAUSE = 0.05
     #pyautogui.FAILSAFE=False
