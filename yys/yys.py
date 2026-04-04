@@ -43,6 +43,8 @@ class Worker(QObject):
         #self.progress.emit('Thread is '+str(self.thread_id),self.thread_id)
         #self.progress.emit('Call function index '+str(self.index)+' with max count of '+str(self.cishu_max),self.thread_id)
         self.index=index
+        if cishu_max < 0:
+            cishu_max = float('inf')
         self.cishu_max=cishu_max
         self.isRunning=True
         if self.index in range(len(self.func)):
@@ -151,6 +153,8 @@ class Worker(QObject):
                             cishu=cishu+1
                         self.message_output('进攻总次数：'+str(cishu)+'/'+str(self.cishu_max))
                         t = random.randint(500,800) / 100
+                    elif 'lingxunzhang' in i:
+                        t = random.randint(100,200) / 100
                     self.message_output(i)
                     if cishu > self.cishu_max:
                         self.message_output('进攻次数上限: '+str(cishu)+'/'+str(self.cishu_max))
