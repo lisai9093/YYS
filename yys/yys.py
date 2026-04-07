@@ -358,7 +358,8 @@ class Worker(QObject):
         last_click=''
         cishu=0
         refresh=0
-        right = (754, 420)
+        right = (654, 420)
+        left = (454, 420)
         
         boss_done=False
         while self.isRunning:   #直到取消，或者出错
@@ -609,7 +610,8 @@ class Worker(QObject):
         last_click=''
         cishu=0
         refresh=0
-        right = (754, 420)
+        right = (654, 420)
+        left = (454, 420)
         
         boss_done=False
         while self.isRunning:   #直到取消，或者出错
@@ -651,7 +653,7 @@ class Worker(QObject):
 
             pts = action.locate(screen,want,0)
             if not len(pts) == 0:
-                #self.message_output('正在地图中')
+                self.message_output('正在地图中')
                 for i in ['boss', 'jian','jian2','boss2']:
                     want = self.imgs[i]
                     size = want[0].shape
@@ -687,7 +689,8 @@ class Worker(QObject):
                         if self.sleep_fast(t): return
                         continue
                     else:
-                        i='tuichu'
+                        self.message_output('准备退出')
+                        i='tuichu2'
                         want = self.imgs[i]
                         size = want[0].shape
                         h, w , ___ = size
