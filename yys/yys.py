@@ -654,7 +654,7 @@ class Worker(QObject):
             pts = action.locate(screen,want,0)
             if not len(pts) == 0:
                 self.message_output('正在地图中')
-                for i in ['boss', 'jian','jian2','boss2']:
+                for i in ['boss','boss2','jian','jian2']:
                     want = self.imgs[i]
                     size = want[0].shape
                     h, w , ___ = size
@@ -663,7 +663,6 @@ class Worker(QObject):
                     if not len(pts) == 0:
                         if 'boss' in i:
                             boss_done=True
-                            i='jian'
                         if last_click==i:
                             refresh=refresh+1
                         else:
@@ -690,21 +689,21 @@ class Worker(QObject):
                         continue
                     else:
                         self.message_output('准备退出')
-                        i='tuichu2'
-                        want = self.imgs[i]
-                        size = want[0].shape
-                        h, w , ___ = size
-                        pts = action.locate(screen,want,0)
-                        if not len(pts) == 0:
-                            self.message_output('退出中'+i)
-                            try:
-                                queding = pts[1]
-                            except:
-                                queding = pts[0]
-                            xy = action.cheat(queding, w, h)
-                            action.touch(xy,self.thread_id)
-                            t = random.randint(50,80) / 100
-                            if self.sleep_fast(t): return
+                        for i in ['tuichu','tuichu2']:
+                            want = self.imgs[i]
+                            size = want[0].shape
+                            h, w , ___ = size
+                            pts = action.locate(screen,want,0)
+                            if not len(pts) == 0:
+                                self.message_output('退出中'+i)
+                                try:
+                                    queding = pts[1]
+                                except:
+                                    queding = pts[0]
+                                xy = action.cheat(queding, w, h)
+                                action.touch(xy,self.thread_id)
+                                t = random.randint(50,80) / 100
+                                if self.sleep_fast(t): return
                     continue
 
             for i in ['jujue','querenyuhun',\
