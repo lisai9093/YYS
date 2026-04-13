@@ -143,7 +143,7 @@ class Worker(QObject):
                         return
                     
                     t = random.randint(50,100) / 100
-                    if i == 'shibai':
+                    if i == 'shibai' and refresh==0:
                         if cishu>0:
                             cishu = cishu - 1
                         self.message_output('进攻总次数：'+str(cishu)+'/'+str(self.cishu_max))
