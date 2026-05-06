@@ -1,2 +1,2 @@
 @echo off
-python main.py %*
+start python main.py %*
