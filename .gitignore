@@ -8,3 +8,4 @@ dist*
 setup.py
 test.py
 build*
+resources*
