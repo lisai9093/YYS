@@ -913,8 +913,8 @@ class Worker(QObject):
                 self.message_output('体力不足 ')
                 return
             
-            for i in ['jujue','querenyuhun','queding','hdend',\
-                      'hdtiaozhan','hdtiaozhan2','hdlingqu','hdsousuo','zhunbei',\
+            for i in ['jujue','querenyuhun','queding','hddianji','hdend',\
+                      'hdsousuo','hdsousuo2','hdtiaozhan','hdtiaozhan2','hdfaxian','zhunbei',\
                       'shibai','jixu','liaotianguanbi','hdshengli']:
                 want = self.imgs[i]
                 size = want[0].shape
@@ -949,6 +949,9 @@ class Worker(QObject):
                             t = 10*60
                             if self.sleep_fast(t): return
                             break
+                    elif i=='hddianji':
+                        t=0
+                        refresh=0
                     xy = action.cheat(pts[0], w, h)
                     action.touch(xy,self.thread_id)
                     #self.message_output('等待时间：',t)
