@@ -914,7 +914,7 @@ class Worker(QObject):
                 return
             
             for i in ['jujue','querenyuhun','queding','hddianji','hdend',\
-                      'hdsousuo','hdsousuo2','hdtiaozhan','hdtiaozhan2','hdfaxian','zhunbei',\
+                      'hdtiaozhan','hdtiaozhan2','hdfaxian','hdsousuo','hdsousuo2','zhunbei',\
                       'shibai','jixu','liaotianguanbi','hdshengli']:
                 want = self.imgs[i]
                 size = want[0].shape

@@ -15,6 +15,16 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import QThread,pyqtSignal,QProcess,QMutex,Qt
 import action
 
+
+def resource_path(rel_path: str) -> str:
+    """Return absolute path to resource, whether running from source or PyInstaller bundle."""
+    if getattr(sys, 'frozen', False):
+        # PyInstaller extracts files to _MEIPASS
+        base = getattr(sys, '_MEIPASS', os.path.dirname(sys.executable))
+    else:
+        base = os.path.abspath(os.path.dirname(__file__))
+    return os.path.join(base, rel_path)
+
 #global variables
 mutex = QMutex()
 
@@ -38,7 +48,7 @@ class MyThread(QThread):
 class MainWindow(QMainWindow):
     def __init__(self,nthread):
         super().__init__()
-        loadUi('main.ui', self)
+        loadUi(resource_path('main.ui'), self)
         self.setWindowTitle(game_name+'脚本 - lisai9093')
         self.nthread=nthread
         self.tab=[None]*self.nthread
@@ -50,7 +60,7 @@ class MainWindow(QMainWindow):
         # Create tabs and load the same UI file into each
         for i in range(self.nthread):
             #GUI
-            self.tab[i]=loadUi('main.ui')
+            self.tab[i]=loadUi(resource_path('main.ui'))
             self.tabWidget.addTab(self.tab[i], f'设备{i+1}：桌面版')
             #self.tab[i].pushButton_start.clicked.connect(lambda thread_id=i: self.start_stop(thread_id))
             self.tab[i].pushButton_start.clicked.connect(partial(self.start_stop, thread_id=i))
@@ -174,21 +184,13 @@ class MainWindow(QMainWindow):
                     self.workers[thread_id] = game.Worker(thread_id)
                     self.workers[thread_id].moveToThread(self.threads[thread_id])
                     # CRITICAL: Connect AFTER moveToThread() with QueuedConnection!
-                    if hasattr(self.workers[thread_id], 'start_task'):
-                        self.workers[thread_id].start_task.connect(self.workers[thread_id].execute_task, Qt.ConnectionType.QueuedConnection)
+                    self.workers[thread_id].start_task.connect(self.workers[thread_id].execute_task, Qt.ConnectionType.QueuedConnection)
                     self.workers[thread_id].finished.connect(partial(self.thread_finished, thread_id=thread_id))
                     self.workers[thread_id].progress.connect(self.update_text_browser)
                 
                 # ✅ Emit signal to worker thread (queued, non-blocking)
                 self.t_start[thread_id]=time.time()
-                if hasattr(self.workers[thread_id], 'start_task'):
-                    self.workers[thread_id].start_task.emit(index, cishu_max)
-                else:
-                    # Fallback for nsh game type
-                    if hasattr(self.workers[thread_id], 'execute_task'):
-                        self.workers[thread_id].execute_task(index, cishu_max)
-                    else:
-                        self.workers[thread_id].run(index, cishu_max)
+                self.workers[thread_id].start_task.emit(index, cishu_max)
                 self.isRunning[thread_id]=True
                 self.workers[thread_id].isRunning=True
                 pushButton_start.setText('停止')
@@ -257,37 +259,34 @@ class MainWindow(QMainWindow):
         
 ####################################################
 if __name__ == '__main__':
-    #初始化设置
-    config_path='config.ini'
-    if os.path.exists(config_path):
-        print("config.ini")
+    # 初始化设置
+    # Try multiple locations for config.ini: current working dir, bundled resources, script dir
+    candidates = [os.path.join(os.getcwd(), 'config.ini'), resource_path('config.ini'), os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config.ini')]
+    config_path = None
+    for c in candidates:
+        if os.path.exists(c):
+            config_path = c
+            break
+    if not config_path:
+        print('config.ini not found; using built-in defaults')
+        # Provide reasonable defaults so the exe can run without external config
+        config = configparser.ConfigParser(inline_comment_prefixes=';')
+        config['general'] = {
+            'Nthread': '2',
+            'debug': 'False',
+            'game': 'yys'
+        }
     else:
-        print("未找到config.ini")
-        print(os.getcwd())
-        exit(1)
-    config = configparser.ConfigParser(inline_comment_prefixes=';')
-    config.sections()
-    config.read(config_path)
+        print('Using config:', config_path)
+        config = configparser.ConfigParser(inline_comment_prefixes=';')
+        config.sections()
+        config.read(config_path)
     #inputs from terminal
     parser = argparse.ArgumentParser(description='Input parameters')
     parser.add_argument('-game', '--game', help='游戏名称')
     parser.add_argument('-debug', '--debug', type=int, help='Debug模式')
+    parser.add_argument('--gui-test', action='store_true', help='Show a simple GUI test message box and exit')
     args = parser.parse_args()
-    
-    # Validate config
-    required_keys = ['Nthread', 'debug', 'game']
-    if 'general' not in config or not all(k in config['general'] for k in required_keys):
-        print("Error: config.ini missing required keys in [general] section")
-        exit(1)
-    
-    try:
-        nthread_val = int(config['general']['Nthread'])
-        if nthread_val < 1 or nthread_val > 10:
-            raise ValueError("Nthread must be between 1 and 10")
-    except ValueError as e:
-        print(f"Error: Invalid Nthread value - {e}")
-        exit(1)
-    
     #debug模式
     debug_enabled = config['general']['debug'].lower() in ['true', '1', 'yes']
     if args.debug is not None:
@@ -300,16 +299,41 @@ if __name__ == '__main__':
     if args.game:
         game_name=args.game
     print(f'加载游戏脚本文件: {game_name}')
-    #add directory into module search list
-    sys.path.insert(0, game_name)
-    game = importlib.import_module(game_name)
+    # Add directory into module search list. When bundled, put the extracted resources path.
+    game_path_candidate = resource_path(game_name)
+    if os.path.isdir(game_path_candidate):
+        sys.path.insert(0, game_path_candidate)
+    else:
+        # Fall back to original behavior (development environment)
+        sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(__file__)), game_name))
+
+    # Import the game module and log detailed errors if it fails
+    try:
+        game = importlib.import_module(game_name)
+    except Exception as e:
+        import traceback
+        tb = traceback.format_exc()
+        log_path = resource_path('error.log') if getattr(sys, 'frozen', False) else os.path.join(os.path.abspath(os.path.dirname(__file__)), 'error.log')
+        try:
+            with open(log_path, 'w', encoding='utf-8') as f:
+                f.write('Failed to import game module:\n')
+                f.write(tb)
+        except Exception:
+            pass
+        print('Error importing game module:', e)
+        print('Traceback written to', log_path)
+        sys.exit(1)
     #总设备数量
-    nthread=nthread_val
-    print(f'线程总数量：{nthread}')
+    nthread=int(config['general']['Nthread'])
+    print('线程总数量：',nthread)
     #初始化所有线程
     #action.init_thread_variable(nthread)
     #GUI
     app = QApplication(sys.argv)
+    # Quick GUI test if requested (helps verify bundled Qt works)
+    if args.gui_test:
+        QMessageBox.information(None, 'GUI Test', 'GUI is working (test).')
+        sys.exit(0)
     window = MainWindow(nthread)
     window.show()
     #检测系统

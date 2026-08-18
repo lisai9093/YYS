@@ -280,8 +280,19 @@ def locate(target,want, show=bool(0), msg=bool(0)):
 def load_imgs(game_name):
     mubiao = {}
     acc=0.95
-    path = os.getcwd()+'/'+game_name+'/png'
-    file_list = os.listdir(path)
+    # Determine base path: when frozen by PyInstaller, resources are unpacked to _MEIPASS
+    if getattr(sys, 'frozen', False):
+        base = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
+    else:
+        base = os.path.abspath(os.path.dirname(__file__))
+    path = os.path.join(base, game_name, 'png')
+    if not os.path.isdir(path):
+        # Fall back to cwd-based path for compatibility
+        path = os.path.join(os.getcwd(), game_name, 'png')
+    try:
+        file_list = os.listdir(path)
+    except Exception:
+        return mubiao
     for file in file_list:
         if not file.lower().endswith(('.png', '.jpg', '.jpeg')):
             continue
