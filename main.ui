@@ -109,6 +109,19 @@
      <string>清空日志</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_reset">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>380</y>
+      <width>113</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>重置截图</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -116,7 +129,7 @@
      <x>0</x>
      <y>0</y>
      <width>692</width>
-     <height>37</height>
+     <height>30</height>
     </rect>
    </property>
   </widget>
