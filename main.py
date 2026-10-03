@@ -13,6 +13,7 @@ from PyQt6.QtWidgets import (
     QDialog,
 )
 from PyQt6.QtCore import QThread,pyqtSignal,QProcess,QMutex,Qt
+from PyQt6.QtGui import QIcon
 import action
 
 
@@ -350,6 +351,7 @@ if __name__ == '__main__':
     #action.init_thread_variable(nthread)
     #GUI
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon(resource_path('icon.png')))
     # Quick GUI test if requested (helps verify bundled Qt works)
     if args.gui_test:
         QMessageBox.information(None, 'GUI Test', 'GUI is working (test).')
