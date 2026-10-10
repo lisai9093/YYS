@@ -129,8 +129,8 @@ class Worker(QObject):
                 if not len(pts)==0:
                     #无次数，等待5分钟
                     if i == 'tuposhangxian':
-                            self.message_output('进攻CD，暂停5分钟')
-                            t=60*5
+                            self.message_output('进攻CD，暂停1分钟')
+                            t=60
                             if self.sleep_fast(t): return
                             break
                     if last_click==i:
@@ -323,7 +323,7 @@ class Worker(QObject):
                 return
 
             for i in ['jujue','querenyuhun','zhidao','ying','jiangli','jiangli2','jixu','zhunbei','guanbi',\
-                      'tiaozhan','tiaozhan2','tiaozhan4','queding','tancha','shibai']:
+                      'tiaozhan','tiaozhan2','tiaozhan3','tiaozhan4','queding','tancha','shibai']:
                 want=self.imgs[i]
                 size = want[0].shape
                 h, w , ___ = size
@@ -723,6 +723,7 @@ class Worker(QObject):
                     if refresh==0 and i=='tansuo':
                         cishu=cishu+1
                         self.message_output('探索次数：'+str(cishu)+'/'+str(self.cishu_max))
+                        boss_done=False
                     if refresh>6 or cishu>self.cishu_max:
                         self.message_output('进攻次数上限')
                         return
