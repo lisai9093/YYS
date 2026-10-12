@@ -610,7 +610,7 @@ class Worker(QObject):
         last_click=''
         cishu=0
         refresh=0
-        right = (654, 420)
+        right = (654, 520)
         left = (454, 420)
         
         boss_done=False
@@ -680,6 +680,7 @@ class Worker(QObject):
                         break
 
                 if len(pts)==0:
+                    refresh=0
                     if not boss_done:
                         self.message_output('向右走')
                         xy = action.cheat(right, 10, 10)
