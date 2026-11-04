@@ -943,7 +943,7 @@ class Worker(QObject):
                     if refresh>6 or cishu>self.cishu_max:
                         self.message_output('进攻次数上限')
                         return
-                    if i=='hdsousuo':
+                    if 'hdsousuo' in i:
                         t=5
                     if i=='hdend':
                         if refresh==0:
