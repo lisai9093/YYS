@@ -14,8 +14,7 @@ class Worker(QObject):
         #设置默认功能和次数
         self.func=[{'description':'0 屏幕截图并保存','func_name':0,'count_default':'inf'},\
         {'description':'1 组队司机','func_name':self.huodong,'count_default':'inf'},\
-        {'description':'2 组队打手','func_name':self.huodong2,'count_default':'inf'},
-        {'description':'3 刷视频','func_name':self.shua,'count_default':1500}]
+        {'description':'2 打手+刷视频','func_name':self.huodong_shua,'count_default':'inf'}]
         #功能序号
         self.index=index
         self.cishu_max=cishu_max
@@ -99,56 +98,26 @@ class Worker(QObject):
                         if self.sleep_fast(t): return
                     break
         
-    #打手
-    def huodong2(self):
-        last_click=''
+    #打手+刷视频
+    def huodong_shua(self):
         cishu=0
-        refresh=0
-        
-        while self.isRunning:
-            #截屏
-            screen=action.screenshot(self.thread_id)
-
-            #自动点击通关结束后的页面
-            for i in ['dagou','daiji']:
-                want = self.imgs[i]
-                size = want[0].shape
-                h, w , ___ = size
-                target = screen
-                pts = action.locate(target,want,0)
-                if not len(pts) == 0:
-                    self.message_output(i)
-                    if last_click==i:
-                        refresh=refresh+1
-                    else:
-                        refresh=0
-                    last_click=i
-                    #self.message_output('重复次数：',refresh)
-                    self.message_output(i)
-                    t = random.randint(50,100) / 100
-                    if cishu>self.cishu_max:
-                        self.message_output('进攻次数上限')
-                        return
-                    for index in range(len(pts)):
-                        xy = action.cheat(pts[index], w, h-10 )
-                        action.touch(xy,self.thread_id)
-                        if self.sleep_fast(t): return
-
-    #刷视频
-    def shua(self):
-        last_click=''
-        cishu=0
-        refresh=0
-        t=10
+        t=30
         w=640
         h=1136
 
         while self.isRunning:
-            xy = random.randint(1, w-100),random.randint(801, h-100)
-            action.swipe(xy,self.thread_id,800)
-            cishu=cishu+1
-            self.message_output('运行次数：'+str(cishu))
-            if self.sleep_fast(t): return
+            screen=action.screenshot(self.thread_id)
+            pts=action.locate(screen,self.imgs['anzhuang'],0)
+            if not pts:
+                pts=action.locate(screen,self.imgs['anzhuang2'],0)
+            if pts:
+                xy=random.randint(1,w-100),random.randint(801,h-100)
+                action.swipe(xy,self.thread_id,800)
+                cishu=cishu+1
+                self.message_output('检测到安装，向下滑动；运行次数：'+str(cishu))
+                if self.sleep_fast(t): return
+            else:
+                if self.sleep_fast(0.5): return
             if cishu>self.cishu_max:
                 self.message_output('进攻次数上限')
                 return
