@@ -107,6 +107,19 @@ class Worker(QObject):
 
         while self.isRunning:
             screen=action.screenshot(self.thread_id)
+            transition_clicked=False
+            for name in ('kaishi', 'chongshi'):
+                pts=action.locate(screen,self.imgs[name],0)
+                if pts:
+                    action.touch(pts[0],self.thread_id)
+                    self.message_output('检测到'+name+'，已点击')
+                    if self.sleep_fast(1): return
+                    transition_clicked=True
+                    break
+
+            if transition_clicked:
+                continue
+
             pts=action.locate(screen,self.imgs['anzhuang'],0)
             if not pts:
                 pts=action.locate(screen,self.imgs['anzhuang2'],0)
