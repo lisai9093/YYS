@@ -46,12 +46,15 @@ class Worker(QObject):
         if cishu_max < 0:
             cishu_max = float('inf')
         self.cishu_max=cishu_max
-        self.isRunning=True
-        if self.index in range(len(self.func)):
-            command=self.func[self.index]['func_name']
-            command()
-        self.isRunning=False
-        self.finished.emit(self.thread_id)
+        try:
+            if self.index in range(len(self.func)):
+                command=self.func[self.index]['func_name']
+                command()
+        except Exception as error:
+            self.message_output(f'脚本运行异常：{error}')
+        finally:
+            self.isRunning=False
+            self.finished.emit(self.thread_id)
     
     def message_output(self,msg):
         self.progress.emit(msg,self.thread_id)

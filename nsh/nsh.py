@@ -33,15 +33,20 @@ class Worker(QObject):
         if cishu_max is not None:
             self.cishu_max = cishu_max
         
-        if self.index is not None and self.index in range(len(self.func)):
-            command = self.func[self.index]['func_name']
-            # Handle special case for screenshot (func_name is 0)
-            if isinstance(command, int):
-                # Function 0: screen_show is handled by main.py on main thread
-                pass
-            else:
-                command()
-        self.finished.emit(self.thread_id)
+        try:
+            if self.index is not None and self.index in range(len(self.func)):
+                command = self.func[self.index]['func_name']
+                # Handle special case for screenshot (func_name is 0)
+                if isinstance(command, int):
+                    # Function 0: screen_show is handled by main.py on main thread
+                    pass
+                else:
+                    command()
+        except Exception as error:
+            self.message_output(f'脚本运行异常：{error}')
+        finally:
+            self.isRunning=False
+            self.finished.emit(self.thread_id)
     
     def message_output(self,msg):
         self.progress.emit(msg,self.thread_id)

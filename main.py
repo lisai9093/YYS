@@ -211,11 +211,11 @@ class MainWindow(QMainWindow):
                 
                 # ✅ Emit signal to worker thread (queued, non-blocking)
                 self.t_start[thread_id]=time.time()
-                self.workers[thread_id].start_task.emit(index, cishu_max)
                 self.isRunning[thread_id]=True
                 self.workers[thread_id].isRunning=True
                 pushButton_start.setText('停止')
                 pushButton_restart.setEnabled(False)
+                self.workers[thread_id].start_task.emit(index, cishu_max)
         elif not listWidget.selectedItems():
             #没有选择任何脚本
             textBrowser.append('无效选项')
