@@ -14,7 +14,7 @@ class Worker(QObject):
         #设置默认功能和次数
         self.func=[{'description':'0 屏幕截图并保存','func_name':0,'count_default':'inf'},\
         {'description':'1 组队司机','func_name':self.huodong,'count_default':'inf'},\
-        {'description':'2 打手+刷视频','func_name':self.huodong_shua,'count_default':'inf'}]
+        {'description':'2 刷视频','func_name':self.huodong_shua,'count_default':'inf'}]
         #功能序号
         self.index=index
         self.cishu_max=cishu_max
@@ -103,7 +103,7 @@ class Worker(QObject):
                         if self.sleep_fast(t): return
                     break
         
-    #打手+刷视频
+    #刷视频
     def huodong_shua(self):
         cishu=0
         t=30
@@ -113,16 +113,32 @@ class Worker(QObject):
         while self.isRunning:
             screen=action.screenshot(self.thread_id)
             transition_clicked=False
-            for name in ('kaishi', 'chongshi'):
+            for name in ('kaishi', 'kaishi2', 'chongshi', 'chongshi1'):
                 pts=action.locate(screen,self.imgs[name],0)
                 if pts:
+                    cishu=cishu+1
                     action.touch(pts[0],self.thread_id)
-                    self.message_output('检测到'+name+'，已点击')
+                    self.message_output('检测到'+name+'，已点击'+'；运行次数：'+str(cishu))
                     if self.sleep_fast(1): return
                     transition_clicked=True
                     break
 
             if transition_clicked:
+                continue
+
+            suiyi = self.imgs['suiyi']
+            pts = action.locate(screen, suiyi, 0)
+            if pts:
+                image, _, _ = suiyi
+                h, w = image.shape[:2]
+                center_x, center_y = random.choice(pts)
+                xy = (
+                    random.randint(center_x - w // 2, center_x + (w - 1) // 2),
+                    random.randint(center_y - h // 2, center_y + (h - 1) // 2),
+                )
+                action.touch(xy, self.thread_id)
+                self.message_output('检测到suiyi，已随机点击')
+                if self.sleep_fast(1): return
                 continue
 
             pts=action.locate(screen,self.imgs['anzhuang'],0)
