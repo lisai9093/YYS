@@ -69,6 +69,12 @@ class MainWindow(QMainWindow):
             self.tab[i].pushButton_restart.clicked.connect(partial(self.click_restart, thread_id=i))
             self.tab[i].pushButton_reset.clicked.connect(lambda checked=False, thread_id=i: self.click_reset(thread_id))
             self.tab[i].listWidget.currentItemChanged.connect(partial(self.click_list, thread_id=i))
+            self.tab[i].listWidget.itemDoubleClicked.connect(
+                lambda _item, thread_id=i: self.start_stop(thread_id)
+            )
+            self.tab[i].lineEdit.returnPressed.connect(
+                lambda thread_id=i: self.start_stop(thread_id)
+            )
             #self.tab[i].textBrowser.textChanged.connect(lambda thread_id=i: self.text_changed(thread_id))
             self.tab[i].textBrowser.textChanged.connect(partial(self.text_changed, thread_id=i))
             
@@ -365,4 +371,3 @@ if __name__ == '__main__':
     #pyautogui.FAILSAFE=False
 
     sys.exit(app.exec())
-
