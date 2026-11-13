@@ -114,7 +114,7 @@ class Worker(QObject):
                 if len(pts) >= 4:
                     self.message_output('寮突破失败次数：'+str(len(pts)))
                     self.message_output('向上滑')
-                    action.swipe(pts[len(pts)-1],self.thread_id,400)
+                    action.swipe(pts[len(pts)-1],self.thread_id,0,-100)
                     self.sleep_fast(2)
                     continue
             
@@ -751,7 +751,7 @@ class Worker(QObject):
 
             #设定目标，开始查找
             #进入后
-            for i in ['baigui','gailv','douzihuoqu','miaozhun','baiguijieshu',\
+            for i in ['baigui','douzi','gailv','douzihuoqu','miaozhun','baiguijieshu',\
                     'jinru']:
                 want = self.imgs[i]
                 size = want[0].shape
@@ -767,10 +767,15 @@ class Worker(QObject):
                     if i=='jinru':
                         if refresh==0:
                             cishu=cishu+1
-                            self.message_output('进入百鬼:'+str(cishu)+'/'+str(self.cishu_max))
+                        self.message_output('进入百鬼:'+str(cishu)+'/'+str(self.cishu_max))
                         if cishu>self.cishu_max:
                             self.message_output('进攻次数上限')
                             return
+                    elif i=='douzi':
+                        self.message_output('增加豆子数量')
+                        xy = action.cheat(pts[0], w, h )
+                        action.swipe(xy,self.thread_id,200,0)
+                        continue
                     self.message_output('点击'+i)
                     xy = action.cheat(pts[0], w, h )
                     action.touch(xy,self.thread_id)
@@ -824,7 +829,8 @@ class Worker(QObject):
                 else:
                     #选择押注
                     index=random.randint(0,2)
-                    pts2 = (300+index*340, 500)
+                    xmid=1136/2
+                    pts2 = (xmid+(index-1)*330, 420)
                     self.message_output('选择押注: '+str(index))
                     xy = action.cheat(pts2, w, h-10 )
                     action.touch(xy,self.thread_id)

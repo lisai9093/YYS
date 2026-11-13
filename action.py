@@ -430,13 +430,10 @@ def touch(pos,thread_id):
 
 
 
-def swipe(pos,thread_id,dy):
+def swipe(pos,thread_id,dx,dy):
     x, y = pos
-    x1=x
-    if y>dy:
-        y1=y-dy
-    else:
-        y1=1
+    x1=x+dx
+    y1=y+dy
     
     if adb_enable[thread_id]:
         comm=[adb_path,"-s",devices_tab[thread_id],"shell","input","touchscreen","swipe",str(x),str(y),str(x1),str(y1)]
@@ -449,7 +446,7 @@ def swipe(pos,thread_id,dy):
         pyautogui.mouseDown(button='left')
 
         # Drag the mouse to the ending point over 1 second
-        pyautogui.dragTo(x, y1, duration=1)
+        pyautogui.dragTo(x1, y1, duration=1)
 
         # Release the left mouse button
         pyautogui.mouseUp(button='left')

@@ -146,7 +146,7 @@ class Worker(QObject):
                 pts=action.locate(screen,self.imgs['anzhuang2'],0)
             if pts:
                 xy=random.randint(1,w-100),random.randint(801,h-100)
-                action.swipe(xy,self.thread_id,800)
+                action.swipe(xy,self.thread_id,0,-800)
                 cishu=cishu+1
                 self.message_output('检测到安装，向下滑动；运行次数：'+str(cishu))
                 if self.sleep_fast(t): return
