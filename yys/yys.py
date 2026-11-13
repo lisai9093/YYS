@@ -781,7 +781,7 @@ class Worker(QObject):
                     action.touch(xy,self.thread_id)
                     t = random.randint(15,30) / 100
                     if self.sleep_fast(t): return
-                    continue
+                    break
 
             i='inbaigui'
             want=self.imgs[i]
