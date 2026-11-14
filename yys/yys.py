@@ -768,7 +768,7 @@ class Worker(QObject):
                         if refresh==0:
                             cishu=cishu+1
                         self.message_output('进入百鬼:'+str(cishu)+'/'+str(self.cishu_max))
-                        if cishu>self.cishu_max:
+                        if refresh>5 or cishu>self.cishu_max:
                             self.message_output('进攻次数上限')
                             return
                     elif i=='douzi':
