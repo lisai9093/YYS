@@ -47,10 +47,12 @@ class MyThread(QThread):
 ####################################################
 #主窗口
 class MainWindow(QMainWindow):
-    def __init__(self,nthread):
+    def __init__(self,nthread,saved_adb_ports,adb_config_path):
         super().__init__()
         loadUi(resource_path('main.ui'), self)
         self.setWindowTitle(game_name+'脚本 - lisai9093')
+        self.saved_adb_ports=saved_adb_ports
+        self.adb_config_path=adb_config_path
         self.nthread=nthread
         self.tab=[None]*self.nthread
         self.tabWidget = QTabWidget()
@@ -96,6 +98,16 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.tabWidget)
         #自动检测ADB设备
         action.init_thread_variable(nthread)
+
+    def save_adb_port(self, port):
+        save_adb_port(self.adb_config_path, port)
+        if port not in self.saved_adb_ports:
+            self.saved_adb_ports.append(port)
+
+    def delete_saved_adb_port(self, port):
+        delete_saved_adb_port(self.adb_config_path, port)
+        if port in self.saved_adb_ports:
+            self.saved_adb_ports.remove(port)
 
     #清空日志按键
     def click_clear(self,thread_id):
@@ -285,6 +297,66 @@ class MainWindow(QMainWindow):
         popup.exec()
         
 ####################################################
+def load_saved_adb_ports(config_path):
+    config = configparser.ConfigParser()
+    config.read(config_path)
+    ports = config.get('adb', 'ports', fallback='').split(',')
+    legacy_port = config.get('adb', 'port', fallback='')
+    if legacy_port:
+        ports.append(legacy_port)
+    return list(dict.fromkeys(port.strip() for port in ports if port.strip()))
+
+
+def adb_settings_path(config_path):
+    if not getattr(sys, 'frozen', False):
+        config_dir = os.path.dirname(os.path.abspath(config_path))
+    elif sys.platform == 'win32':
+        config_dir = os.environ.get('LOCALAPPDATA') or os.path.expanduser('~')
+        config_dir = os.path.join(config_dir, 'YYS')
+    elif sys.platform == 'darwin':
+        config_dir = os.path.join(
+            os.path.expanduser('~'), 'Library', 'Application Support', 'YYS'
+        )
+    else:
+        config_dir = os.environ.get('XDG_CONFIG_HOME') or os.path.join(
+            os.path.expanduser('~'), '.config'
+        )
+        config_dir = os.path.join(config_dir, 'YYS')
+    return os.path.join(config_dir, 'adb.ini')
+
+
+def save_adb_port(config_path, port):
+    config = configparser.ConfigParser()
+    config.read(config_path)
+    if not config.has_section('adb'):
+        config.add_section('adb')
+    ports = load_saved_adb_ports(config_path)
+    if port not in ports:
+        ports.append(port)
+    config.set('adb', 'ports', ','.join(ports))
+    config.remove_option('adb', 'port')
+    os.makedirs(os.path.dirname(os.path.abspath(config_path)), exist_ok=True)
+    with open(config_path, 'w', encoding='utf-8') as config_file:
+        config.write(config_file)
+
+
+def delete_saved_adb_port(config_path, port):
+    config = configparser.ConfigParser()
+    config.read(config_path)
+    if not config.has_section('adb'):
+        return
+    ports = [saved_port for saved_port in load_saved_adb_ports(config_path) if saved_port != port]
+    legacy_port = config.get('adb', 'port', fallback='')
+    if ports:
+        config.set('adb', 'ports', ','.join(ports))
+    else:
+        config.remove_option('adb', 'ports')
+    if legacy_port == port:
+        config.remove_option('adb', 'port')
+    with open(config_path, 'w', encoding='utf-8') as config_file:
+        config.write(config_file)
+
+
 if __name__ == '__main__':
     # 初始化设置
     # Try multiple locations for config.ini: current working dir, bundled resources, script dir
@@ -296,6 +368,7 @@ if __name__ == '__main__':
             break
     if not config_path:
         print('config.ini not found; using built-in defaults')
+        config_path = candidates[-1]
         # Provide reasonable defaults so the exe can run without external config
         config = configparser.ConfigParser(inline_comment_prefixes=';')
         config['general'] = {
@@ -362,7 +435,12 @@ if __name__ == '__main__':
     if args.gui_test:
         QMessageBox.information(None, 'GUI Test', 'GUI is working (test).')
         sys.exit(0)
-    window = MainWindow(nthread)
+    adb_config_path = adb_settings_path(config_path)
+    window = MainWindow(
+        nthread,
+        saved_adb_ports=load_saved_adb_ports(adb_config_path),
+        adb_config_path=adb_config_path,
+    )
     window.show()
     #检测系统
     print(f'操作系统: {sys.platform}')

@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import (
     QLabel,
     QLineEdit,
     QListWidget,
+    QMessageBox,
     QPushButton,
     QVBoxLayout,
 )
@@ -50,15 +51,47 @@ def parse_adb_devices(output):
 
 
 class DeviceSelectionDialog(QDialog):
-    def __init__(self, parent, adb_path, devices):
+    def __init__(
+        self,
+        parent,
+        adb_path,
+        devices,
+        saved_ports=None,
+        save_port=None,
+        delete_saved_port=None,
+    ):
         super().__init__(parent)
         self.adb_path = adb_path
+        self.saved_ports = list(saved_ports or [])
+        self.save_port = save_port
+        self.delete_saved_port = delete_saved_port
         self.selected_device = None
         self.setWindowTitle('选择安卓设备')
 
         self.device_list = QListWidget()
         self.device_list.addItems(devices)
+        self.active_device_list = self.device_list
+        self.device_list.itemClicked.connect(
+            lambda _item: self._activate_device_list(self.device_list)
+        )
+        self.device_list.currentItemChanged.connect(
+            lambda current, _previous: self._activate_device_list(self.device_list)
+            if current is not None else None
+        )
         self.device_list.itemDoubleClicked.connect(self._select_device)
+
+        self.saved_device_list = QListWidget()
+        self.saved_device_list.addItems(
+            [f'127.0.0.1:{port}' for port in self.saved_ports]
+        )
+        self.saved_device_list.itemClicked.connect(
+            lambda _item: self._activate_device_list(self.saved_device_list)
+        )
+        self.saved_device_list.currentItemChanged.connect(
+            lambda current, _previous: self._activate_device_list(self.saved_device_list)
+            if current is not None else None
+        )
+        self.saved_device_list.itemDoubleClicked.connect(self._select_device)
 
         self.port_input = QLineEdit()
         self.port_input.setPlaceholderText('输入新端口，例如 16384')
@@ -66,9 +99,12 @@ class DeviceSelectionDialog(QDialog):
         self.connect_port_button = QPushButton('连接端口')
         self.connect_port_button.clicked.connect(self._connect_port)
 
-        self.status_label = QLabel('选择已检测到的设备，或输入新端口连接')
+        self.status_label = QLabel('选择设备，或输入新端口连接')
         self.select_button = QPushButton('连接选中设备')
         self.select_button.clicked.connect(self._select_device)
+        self.delete_saved_button = QPushButton('删除已保存设备')
+        self.delete_saved_button.clicked.connect(self._delete_saved_device)
+        self.delete_saved_button.setEnabled(delete_saved_port is not None)
         cancel_button = QPushButton('取消')
         cancel_button.clicked.connect(self.reject)
 
@@ -82,25 +118,29 @@ class DeviceSelectionDialog(QDialog):
         layout = QVBoxLayout(self)
         layout.addWidget(QLabel('检测到的设备'))
         layout.addWidget(self.device_list)
+        layout.addWidget(QLabel('以前连接过的设备'))
+        layout.addWidget(self.saved_device_list)
+        layout.addWidget(self.delete_saved_button)
         layout.addLayout(port_layout)
         layout.addWidget(self.status_label)
         layout.addLayout(button_layout)
 
+    def _activate_device_list(self, device_list):
+        self.active_device_list = device_list
+
     def _select_device(self):
-        item = self.device_list.currentItem()
+        item = self.active_device_list.currentItem()
         if item is None:
             self.status_label.setText('请先选择一个设备')
             return
-        self.selected_device = item.text()
+        device = item.text()
+        if self.active_device_list is self.saved_device_list:
+            if not self._try_connect_device(device):
+                return
+        self.selected_device = device
         self.accept()
 
-    def _connect_port(self):
-        port = self.port_input.text()
-        if not port:
-            self.status_label.setText('请输入端口')
-            return
-
-        device = f'127.0.0.1:{port}'
+    def _try_connect_device(self, device):
         try:
             result = subprocess.run(
                 [self.adb_path, 'connect', device],
@@ -110,7 +150,7 @@ class DeviceSelectionDialog(QDialog):
             )
         except OSError as error:
             self.status_label.setText(f'ADB连接失败：{error}')
-            return
+            return False
         output = result.stdout.decode('utf-8', errors='replace').strip()
         if output:
             self.status_label.setText(output)
@@ -124,14 +164,51 @@ class DeviceSelectionDialog(QDialog):
             )
         except OSError as error:
             self.status_label.setText(f'ADB检测失败：{error}')
-            return
+            return False
         devices_output = devices_result.stdout.decode('utf-8', errors='replace')
         if device not in parse_adb_devices(devices_output):
             self.status_label.setText(f'连接失败：未检测到 {device}')
+            return False
+
+        return True
+
+    def _connect_port(self):
+        port = self.port_input.text()
+        if not port:
+            self.status_label.setText('请输入端口')
             return
 
+        device = f'127.0.0.1:{port}'
+        if not self._try_connect_device(device):
+            return
+
+        if self.save_port is not None and port not in self.saved_ports:
+            try:
+                self.save_port(port)
+            except OSError as error:
+                QMessageBox.warning(self, '保存端口失败', f'ADB已连接，但端口未能保存：{error}')
+            else:
+                self.saved_ports.append(port)
+                self.saved_device_list.addItem(device)
         self.selected_device = device
         self.accept()
+
+    def _delete_saved_device(self):
+        item = self.saved_device_list.currentItem()
+        if item is None:
+            self.status_label.setText('请先选择要删除的已保存设备')
+            return
+        port = item.text().rsplit(':', 1)[-1]
+        if self.delete_saved_port is not None:
+            try:
+                self.delete_saved_port(port)
+            except OSError as error:
+                QMessageBox.warning(self, '删除设备失败', f'无法删除已保存设备：{error}')
+                return
+        self.saved_device_list.takeItem(self.saved_device_list.row(item))
+        self.saved_ports.remove(port)
+        if self.active_device_list is self.saved_device_list:
+            self.active_device_list = self.device_list
 
 
 def startup(window):
@@ -175,9 +252,20 @@ def startup(window):
         out=''
     devices = parse_adb_devices(out)
 
-    dialog = DeviceSelectionDialog(window, adb_path, devices)
+    dialog = DeviceSelectionDialog(
+        window,
+        adb_path,
+        devices,
+        saved_ports=window.saved_adb_ports,
+        save_port=window.save_adb_port,
+        delete_saved_port=window.delete_saved_adb_port,
+    )
     if dialog.exec() == QDialog.DialogCode.Accepted:
         device = dialog.selected_device
+    else:
+        device = None
+
+    if device is not None:
         textBrowser.append('监测到ADB设备，默认使用安卓截图')
         devices_tab[thread_id]=device
         adb_enable[thread_id]=True
