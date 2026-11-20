@@ -307,24 +307,6 @@ def load_saved_adb_ports(config_path):
     return list(dict.fromkeys(port.strip() for port in ports if port.strip()))
 
 
-def adb_settings_path(config_path):
-    if not getattr(sys, 'frozen', False):
-        config_dir = os.path.dirname(os.path.abspath(config_path))
-    elif sys.platform == 'win32':
-        config_dir = os.environ.get('LOCALAPPDATA') or os.path.expanduser('~')
-        config_dir = os.path.join(config_dir, 'YYS')
-    elif sys.platform == 'darwin':
-        config_dir = os.path.join(
-            os.path.expanduser('~'), 'Library', 'Application Support', 'YYS'
-        )
-    else:
-        config_dir = os.environ.get('XDG_CONFIG_HOME') or os.path.join(
-            os.path.expanduser('~'), '.config'
-        )
-        config_dir = os.path.join(config_dir, 'YYS')
-    return os.path.join(config_dir, 'adb.ini')
-
-
 def save_adb_port(config_path, port):
     config = configparser.ConfigParser()
     config.read(config_path)
@@ -435,11 +417,10 @@ if __name__ == '__main__':
     if args.gui_test:
         QMessageBox.information(None, 'GUI Test', 'GUI is working (test).')
         sys.exit(0)
-    adb_config_path = adb_settings_path(config_path)
     window = MainWindow(
         nthread,
-        saved_adb_ports=load_saved_adb_ports(adb_config_path),
-        adb_config_path=adb_config_path,
+        saved_adb_ports=load_saved_adb_ports(config_path),
+        adb_config_path=config_path,
     )
     window.show()
     #检测系统
