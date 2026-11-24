@@ -106,14 +106,14 @@ class Worker(QObject):
     #刷视频
     def huodong_shua(self):
         cishu=0
-        t=30
-        w=640
-        h=1136
+        t=1
+        t_max=60
+        tstart=time.perf_counter()
 
         while self.isRunning:
             screen=action.screenshot(self.thread_id)
             transition_clicked=False
-            for name in ('kaishi', 'kaishi2', 'chongshi', 'chongshi1'):
+            for name in ('kaishi', 'kaishi2', 'chongshi', 'chongshi1','jiazaishibai'):
                 pts=action.locate(screen,self.imgs[name],0)
                 if pts:
                     cishu=cishu+1
@@ -141,17 +141,22 @@ class Worker(QObject):
                 if self.sleep_fast(1): return
                 continue
 
-            pts=action.locate(screen,self.imgs['anzhuang'],0)
-            if not pts:
-                pts=action.locate(screen,self.imgs['anzhuang2'],0)
-            if pts:
-                xy=random.randint(1,w-100),random.randint(801,h-100)
-                action.swipe(xy,self.thread_id,0,-800)
-                cishu=cishu+1
-                self.message_output('检测到安装，向下滑动；运行次数：'+str(cishu))
-                if self.sleep_fast(t): return
-            else:
-                if self.sleep_fast(0.5): return
-            if cishu>self.cishu_max:
-                self.message_output('进攻次数上限')
-                return
+            for name in ('anzhuang', 'anzhuang2', 'xiazai','xiazai2','lingqu','jiazaishibai2'):
+                tend=time.perf_counter()
+                delta_t=tend-tstart
+                pts=action.locate(screen,self.imgs[name],0)
+                if pts or delta_t>t_max:
+                    h=640
+                    w=1136
+                    tstart=time.perf_counter()
+                    xy=500,random.randint(h-100,h-50)
+                    action.swipe(xy,self.thread_id,0,-800)
+                    cishu=cishu+1
+                    if pts:
+                        self.message_output('检测到'+name+'，向上滑；运行次数：'+str(cishu))
+                    else:
+                        self.message_output('时间到，向上滑；运行次数：'+str(cishu))
+                    if cishu>self.cishu_max:
+                        self.message_output('进攻次数上限')
+                        return
+                    if self.sleep_fast(t): return
