@@ -112,34 +112,15 @@ class Worker(QObject):
 
         while self.isRunning:
             screen=action.screenshot(self.thread_id)
-            transition_clicked=False
-            for name in ('kaishi', 'kaishi2', 'chongshi', 'chongshi1','jiazaishibai'):
+            for name in ('kaishi', 'kaishi2', 'chongshi', 'chongshi1','chongshi2','jiazaishibai',\
+                         'suiyi','zhidao'):
                 pts=action.locate(screen,self.imgs[name],0)
                 if pts:
                     cishu=cishu+1
                     action.touch(pts[0],self.thread_id)
                     self.message_output('检测到'+name+'，已点击'+'；运行次数：'+str(cishu))
                     if self.sleep_fast(1): return
-                    transition_clicked=True
                     break
-
-            if transition_clicked:
-                continue
-
-            suiyi = self.imgs['suiyi']
-            pts = action.locate(screen, suiyi, 0)
-            if pts:
-                image, _, _ = suiyi
-                h, w = image.shape[:2]
-                center_x, center_y = random.choice(pts)
-                xy = (
-                    random.randint(center_x - w // 2, center_x + (w - 1) // 2),
-                    random.randint(center_y - h // 2, center_y + (h - 1) // 2),
-                )
-                action.touch(xy, self.thread_id)
-                self.message_output('检测到suiyi，已随机点击')
-                if self.sleep_fast(1): return
-                continue
 
             for name in ('anzhuang', 'anzhuang2', 'xiazai','xiazai2','lingqu','jiazaishibai2'):
                 tend=time.perf_counter()
